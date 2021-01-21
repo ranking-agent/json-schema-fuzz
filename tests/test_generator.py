@@ -24,3 +24,17 @@ def test_object():
     output = generate_json(schema)
     assert isinstance(output, dict)
     assert isinstance(output.get("a", 0), int)
+
+def test_boolean():
+    """Test generating boolean."""
+    schema = {
+        "type": "object",
+        "properties": {
+            "a": {
+                "type": "boolean"
+            }
+        }
+    }
+    output = generate_json(schema)
+    assert isinstance(output, dict)
+    assert isinstance(output.get("a", 0), bool)
