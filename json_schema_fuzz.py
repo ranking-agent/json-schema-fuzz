@@ -18,17 +18,20 @@ def random_object(schema):
             object[key] = generate_json(value)
     return object
 
+
 def random_boolean(schema):
     """Generate random JSON boolean."""
     return random.choice([True, False])
 
+
 def random_string(schema):
     """Generate random string."""
-    lowercase_letters = string.ascii_lowercase
-    word_length = random.randrange(1, (20+1))
-    new_word_list = random.choices(lowercase_letters, k = word_length)
-    new_word = "".join(new_word_list)
+    lowercase_letters=string.ascii_lowercase
+    word_length=random.randrange(1, 20)
+    new_word_list=random.choices(lowercase_letters, k=word_length)
+    new_word="".join(new_word_list)
     return new_word
+
 
 def generate_json(schema):
     """Generate random JSON conforming to schema."""
