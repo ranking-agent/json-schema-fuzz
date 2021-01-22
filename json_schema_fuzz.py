@@ -26,10 +26,10 @@ def random_boolean(schema):
 
 def random_string(schema):
     """Generate random string."""
-    lowercase_letters=string.ascii_lowercase
-    word_length=random.randrange(1, 20)
-    new_word_list=random.choices(lowercase_letters, k=word_length)
-    new_word="".join(new_word_list)
+    lowercase_letters = string.ascii_lowercase
+    word_length = random.randrange(1, 20)
+    new_word_list = random.choices(lowercase_letters, k=word_length)
+    new_word = "".join(new_word_list)
     return new_word
 
 
