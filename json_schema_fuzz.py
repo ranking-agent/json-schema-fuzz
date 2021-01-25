@@ -27,11 +27,16 @@ def random_boolean(schema):
 
 def random_string(schema):
     """Generate random string."""
-    lowercase_letters = string.ascii_lowercase
-    word_length = random.randrange(1, 20)
-    new_word_list = random.choices(lowercase_letters, k=word_length)
-    new_word = "".join(new_word_list)
-    return new_word
+    pattern = schema.get("pattern", None) # check if string is restricted to a regex pattern
+    if pattern == None:
+        lowercase_letters = string.ascii_lowercase
+        word_length = random.randrange(1, 20)
+        new_word_list = random.choices(lowercase_letters, k=word_length)
+        new_word = "".join(new_word_list)
+        return new_word
+    else:
+        return exrex.getone(pattern)
+    
 
 
 def generate_json(schema):
@@ -44,10 +49,6 @@ def generate_json(schema):
     elif type == "boolean":
         return random_boolean(schema)
     elif type == "string":
-        pattern = schema.get("pattern", None) # check if string is restricted to a regex pattern
-        if pattern == None:
-            return random_string(schema)
-        else:
-            return exrex.getone(pattern)
+        return random_string(schema)
     else:
         raise NotImplementedError()
