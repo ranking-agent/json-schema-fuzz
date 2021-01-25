@@ -1,6 +1,7 @@
 """JSON schema fuzzer."""
 import random
 import string
+import exrex
 
 
 def random_integer(schema):
@@ -43,6 +44,10 @@ def generate_json(schema):
     elif type == "boolean":
         return random_boolean(schema)
     elif type == "string":
-        return random_string(schema)
+        pattern = schema.get("pattern", None) # check if string is restricted to a regex pattern
+        if pattern == None:
+            return random_string(schema)
+        else:
+            return exrex.getone(pattern)
     else:
         raise NotImplementedError()
