@@ -45,7 +45,7 @@ def test_pattern_string():
     }
     output = generate_json(schema)
     assert isinstance(output, str)
-    assert re.fullmatch(schema.get("pattern"), output) != None
+    assert re.fullmatch(schema.get("pattern"), output) is not None
 
     
 def test_no_pattern_string():
