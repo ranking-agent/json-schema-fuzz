@@ -40,6 +40,25 @@ def random_string(schema):
         return exrex.getone(pattern)
 
 
+def random_array(schema):
+    """Generate random array."""
+    items = schema.get("items", None)
+    # if items != None:
+    #     if isinstance(items, list):
+    #         pass
+    #     else:
+    #         my_type = items.get("type", None)
+    #         if my_type == "string":
+    #             pass
+    minitems = schema.get("minItems", None)
+    maxitems = schema.get("maxItems", None)
+    contains = schema.get("contains", None)
+    
+    if items == None:
+        my_array = []
+    
+    return
+
 def generate_json(schema):
     """Generate random JSON conforming to schema."""
     type = schema.get("type", None)
