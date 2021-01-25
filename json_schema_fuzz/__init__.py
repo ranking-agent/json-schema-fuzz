@@ -43,19 +43,31 @@ def random_string(schema):
 def random_array(schema):
     """Generate random array."""
     items = schema.get("items", None)
-    # if items != None:
-    #     if isinstance(items, list):
-    #         pass
-    #     else:
-    #         my_type = items.get("type", None)
-    #         if my_type == "string":
-    #             pass
-    minitems = schema.get("minItems", None)
-    maxitems = schema.get("maxItems", None)
-    contains = schema.get("contains", None)
+    if items != None:
+        if isinstance(items, list):
+            my_list = []
+            for thing in items:
+                my_list.append(generate_json(thing))
+            return my_list
+        else:
+            minitems = schema.get("minItems", None)
+            maxitems = schema.get("maxItems", None)
+            if minitems != None:
+                my_min = minitems
+            else:
+                my_min = 1
+            if maxitems != None:
+                my_max = maxitems
+            else: 
+                my_max = 20
+            list_length = random.randrange(my_min, my_max)
+            
+    # minitems = schema.get("minItems", None)
+    # maxitems = schema.get("maxItems", None)
+    # contains = schema.get("contains", None)
     
-    if items == None:
-        my_array = []
+    # if items == None:
+    #     my_array = []
     
     return
 
@@ -70,5 +82,7 @@ def generate_json(schema):
         return random_boolean(schema)
     elif type == "string":
         return random_string(schema)
+    elif type == "array":
+        return random_array(schema)
     else:
         raise NotImplementedError()
