@@ -1,6 +1,6 @@
 """Test JSON schema fuzzer."""
 from json_schema_fuzz import generate_json
-
+import re
 
 def test_integer():
     """Test generating integers."""
@@ -46,7 +46,9 @@ def test_pattern_string():
         "pattern": "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"
     }
     output = generate_json(schema)
+    match = re.fullmatch(schema.get("pattern"), output)
     print('result: ', output)
+    print('pattern match: Yes' if match != None else 'pattern match: No')
     assert isinstance(output, str)
 
     
