@@ -8,6 +8,7 @@ def test_integer():
         "type": "integer"
     }
     output = generate_json(schema)
+    print('result: ', output)
     assert isinstance(output, int)
 
 
@@ -22,6 +23,7 @@ def test_object():
         }
     }
     output = generate_json(schema)
+    print('result: ', output)
     assert isinstance(output, dict)
     assert isinstance(output.get("a", 0), int)
 
@@ -32,4 +34,27 @@ def test_boolean():
         "type": "boolean"
     }
     output = generate_json(schema)
+    print('result: ', output)
     assert isinstance(output, bool)
+
+
+def test_pattern_string():
+    """Test generating a pattern restricted string."""
+    # (test uses a pattern for a simple North American telephone number with an optional area code)
+    schema = {
+        "type": "string",
+        "pattern": "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"
+    }
+    output = generate_json(schema)
+    print('result: ', output)
+    assert isinstance(output, str)
+
+    
+def test_no_pattern_string():
+    """Test generating string with no pattern restriction."""
+    schema = {
+        "type": "string",
+    }
+    output = generate_json(schema)
+    print('result: ', output)
+    assert isinstance(output, str)
