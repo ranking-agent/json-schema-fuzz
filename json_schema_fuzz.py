@@ -15,7 +15,7 @@ def random_object(schema):
     required = schema.get("required", [])
     object = dict()
     for key, value in properties.items():
-        if key in required or random.randint(0, 1):
+        if key in required or random.choice([True, False]):
             object[key] = generate_json(value)
     return object
 
