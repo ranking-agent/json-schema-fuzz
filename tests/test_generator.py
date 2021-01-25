@@ -50,6 +50,7 @@ def test_pattern_string():
     print('result: ', output)
     print('pattern match: Yes' if match != None else 'pattern match: No')
     assert isinstance(output, str)
+    assert re.fullmatch(schema.get("pattern"), output) != None
 
     
 def test_no_pattern_string():
