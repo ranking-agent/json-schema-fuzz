@@ -43,24 +43,25 @@ def random_string(schema):
 def random_array(schema):
     """Generate random array."""
     items = schema.get("items", None)
-    if items != None:
+    if items is not None:
         if isinstance(items, list):
             my_list = []
             for thing in items:
                 my_list.append(generate_json(thing))
             return my_list
         else:
-            minitems = schema.get("minItems", None)
-            maxitems = schema.get("maxItems", None)
-            if minitems != None:
-                my_min = minitems
-            else:
-                my_min = 1
-            if maxitems != None:
-                my_max = maxitems
-            else: 
-                my_max = 20
-            list_length = random.randrange(my_min, my_max)
+            generate_json(items)
+    # minitems = schema.get("minItems", None)
+    # maxitems = schema.get("maxItems", None)
+    # if minitems is not None:
+    #     my_min = minitems
+    # else:
+    #     my_min = 1
+    # if maxitems is not None:
+    #     my_max = maxitems
+    # else: 
+    #     my_max = 20
+    # list_length = random.randrange(my_min, my_max)
             
     # minitems = schema.get("minItems", None)
     # maxitems = schema.get("maxItems", None)
