@@ -1,0 +1,6 @@
+codecov
+flake8
+isort
+pylint
+pytest
+pytest-cov

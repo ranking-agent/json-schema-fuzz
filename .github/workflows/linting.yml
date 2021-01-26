@@ -1,0 +1,29 @@
+name: 'lint'
+
+on: 
+  - pull_request
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Run linters
+        uses: github/super-linter@v3
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OUTPUT_DETAILS: detailed
+          SUPPRESS_POSSUM: true
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_PYTHON_ISORT: true
+          VALIDATE_PYTHON_FLAKE8: true
+          VALIDATE_PYTHON_PYLINT: true
+          LINTER_RULES_PATH: '.'
+          PYTHON_FLAKE8_CONFIG_FILE: .flake8
+          PYTHON_PYLINT_CONFIG_FILE: .pylintrc
