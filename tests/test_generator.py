@@ -1,6 +1,7 @@
 """Test JSON schema fuzzer."""
-from json_schema_fuzz import generate_json
 import re
+
+from json_schema_fuzz import generate_json
 
 
 def test_integer():
@@ -37,8 +38,11 @@ def test_boolean():
 
 
 def test_pattern_string():
-    """Test generating a pattern restricted string."""
-    # (test uses a pattern for a simple North American telephone number with an optional area code)
+    """Test generating a pattern restricted string.
+
+    Test uses a pattern for a simple North American telephone number with an
+    optional area code.
+    """
     schema = {
         "type": "string",
         "pattern": "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"
@@ -47,7 +51,7 @@ def test_pattern_string():
     assert isinstance(output, str)
     assert re.fullmatch(schema.get("pattern"), output) is not None
 
-    
+
 def test_no_pattern_string():
     """Test generating string with no pattern restriction."""
     schema = {

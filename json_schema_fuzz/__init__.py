@@ -1,6 +1,7 @@
 """JSON schema fuzzer."""
 import random
 import string
+
 import exrex
 
 
@@ -27,8 +28,9 @@ def random_boolean(schema):
 
 def random_string(schema):
     """Generate random string."""
-    pattern = schema.get("pattern", None) # check if string is restricted to a regex pattern
-    if pattern == None:
+    # check if string is restricted to a regex pattern
+    pattern = schema.get("pattern", None)
+    if pattern is None:
         lowercase_letters = string.ascii_lowercase
         word_length = random.randrange(1, 20)
         new_word_list = random.choices(lowercase_letters, k=word_length)
@@ -36,7 +38,6 @@ def random_string(schema):
         return new_word
     else:
         return exrex.getone(pattern)
-    
 
 
 def generate_json(schema):
