@@ -1,0 +1,6 @@
+[MESSAGES CONTROL]
+disable =
+    import-error,
+    no-else-return,
+    redefined-builtin,
+    unused-argument
