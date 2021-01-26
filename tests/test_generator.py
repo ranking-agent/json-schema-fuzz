@@ -55,3 +55,4 @@ def test_no_pattern_string():
     }
     output = generate_json(schema)
     assert isinstance(output, str)
+

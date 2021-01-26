@@ -52,3 +52,4 @@ def generate_json(schema):
         return random_string(schema)
     else:
         raise NotImplementedError()
+
