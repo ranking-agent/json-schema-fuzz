@@ -37,6 +37,29 @@ def test_boolean():
     assert isinstance(output, bool)
 
 
+def test_array_1():
+    """Test generating arrays."""
+    schema = {
+        "type": "array",
+        "items": [
+            {
+            "type": "string"
+            },
+            {
+            "type": "boolean"
+            },
+            {
+            "type": "integer"
+            },
+            {
+            "type": "object"
+            }
+        ]
+    }
+    output = generate_json(schema)
+    assert isinstance(output, list)
+
+
 def test_pattern_string():
     """Test generating a pattern restricted string.
 
