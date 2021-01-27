@@ -48,21 +48,31 @@ def random_array(schema):
     # for now, we will assume that all listed types are required
     # TODO: modify this function to allow for optional types
 
-    # calculate how many items of each type need to be in the resulting array
+    # calculate number of items per type in resulting array
     length = random.randint(minitems, maxitems) # choose a length for outputted array
     num_items = len(items) # number of accepted item type
     pot = length - num_items
     num_each_type = []
     i = 0
+
     while i < num_items:
         give = random.randint(0, pot)
-        num = 1 + give
-        num_each_type.append(num)
+        number = 1 + give
+        num_each_type.append(number)
         pot = pot - give
         i += 1
-    
 
-    return
+    item_list = list(items)
+    final_array = []
+
+    for item in item_list:
+        index = item_list.index(item)
+        num = num_each_type[index]
+        j = 0
+        while j < num:
+            final_array.append(generate_json(item))
+            j += 1
+    return final_array
 
 
 def generate_json(schema):
