@@ -43,34 +43,27 @@ def random_string(schema):
 def random_array(schema):
     """Generate random array."""
     items = schema.get("items", None)
-    if items is not None:
-        if isinstance(items, list):
-            my_list = []
-            for thing in items:
-                my_list.append(generate_json(thing))
-            return my_list
-        else:
-            generate_json(items)
-    # minitems = schema.get("minItems", None)
-    # maxitems = schema.get("maxItems", None)
-    # if minitems is not None:
-    #     my_min = minitems
-    # else:
-    #     my_min = 1
-    # if maxitems is not None:
-    #     my_max = maxitems
-    # else: 
-    #     my_max = 20
-    # list_length = random.randrange(my_min, my_max)
-            
-    # minitems = schema.get("minItems", None)
-    # maxitems = schema.get("maxItems", None)
-    # contains = schema.get("contains", None)
+    maxitems = schema.get("maxItems", 10)
+    minitems = schema.get("minItems", len(items))
+    # for now, we will assume that all listed types are required
+    # TODO: modify this function to allow for optional types
+
+    # calculate how many items of each type need to be in the resulting array
+    length = random.randint(minitems, maxitems) # choose a length for outputted array
+    num_items = len(items) # number of accepted item type
+    pot = length - num_items
+    num_each_type = []
+    i = 0
+    while i < num_items:
+        give = random.randint(0, pot)
+        num = 1 + give
+        num_each_type.append(num)
+        pot = pot - give
+        i += 1
     
-    # if items == None:
-    #     my_array = []
-    
+
     return
+
 
 def generate_json(schema):
     """Generate random JSON conforming to schema."""
