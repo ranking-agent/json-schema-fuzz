@@ -28,9 +28,8 @@ def random_boolean(schema):
 
 def random_string(schema):
     """Generate random string."""
-  # check if string is restricted to a regex pattern
     pattern = schema.get("pattern", None)
-    if pattern is None:
+    if pattern is None:  # check if string is restricted to a regex pattern
         lowercase_letters = string.ascii_lowercase
         word_length = random.randrange(1, 20)
         new_word_list = random.choices(lowercase_letters, k=word_length)
@@ -48,7 +47,7 @@ def random_array(schema):
     maxitems = schema.get("maxItems", 10)
     minitems = schema.get("minItems", 0)
 
-    length = random.randint(minitems, maxitems)  # random length for output array
+    length = random.randint(minitems, maxitems)
     output_array = []
     for i in range(length):
         output_array.append(generate_json(items))
