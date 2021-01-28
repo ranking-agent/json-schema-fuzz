@@ -48,9 +48,7 @@ def random_array(schema):
     minitems = schema.get("minItems", 0)
 
     length = random.randint(minitems, maxitems)
-    output_array = []
-    for i in range(length):
-        output_array.append(generate_json(items))
+    output_array = [generate_json(items) for _ in range(length)]
     return output_array
 
 
