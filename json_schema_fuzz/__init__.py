@@ -43,7 +43,7 @@ def random_array(schema):
     """Generate random array.
     Default min and max length are set to 0 and 10, respectively.
     """
-    items = schema.get("items", None)
+    items = schema.get("items", {})
     maxitems = schema.get("maxItems", 10)
     minitems = schema.get("minItems", 0)
 
