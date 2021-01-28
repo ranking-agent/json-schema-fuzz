@@ -28,7 +28,7 @@ def random_boolean(schema):
 
 def random_string(schema):
     """Generate random string."""
-    # check if string is restricted to a regex pattern
+  # check if string is restricted to a regex pattern
     pattern = schema.get("pattern", None)
     if pattern is None:
         lowercase_letters = string.ascii_lowercase
@@ -41,38 +41,18 @@ def random_string(schema):
 
 
 def random_array(schema):
-    """Generate random array."""
+    """Generate random array.
+    Default min and max length are set to 0 and 10, respectively.
+    """
     items = schema.get("items", None)
     maxitems = schema.get("maxItems", 10)
-    minitems = schema.get("minItems", len(items))
-    # for now, we will assume that all listed types are required
-    # TODO: modify this function to allow for optional types
+    minitems = schema.get("minItems", 0)
 
-    # calculate number of items per type in resulting array
-    length = random.randint(minitems, maxitems) # choose a length for outputted array
-    num_items = len(items) # number of accepted item type
-    pot = length - num_items
-    num_each_type = []
-    i = 0
-
-    while i < num_items:
-        give = random.randint(0, pot)
-        number = 1 + give
-        num_each_type.append(number)
-        pot = pot - give
-        i += 1
-
-    item_list = list(items)
-    final_array = []
-
-    for item in item_list:
-        index = item_list.index(item)
-        num = num_each_type[index]
-        j = 0
-        while j < num:
-            final_array.append(generate_json(item))
-            j += 1
-    return final_array
+    length = random.randint(minitems, maxitems)  # random length for output array
+    output_array = []
+    for i in range(length):
+        output_array.append(generate_json(items))
+    return output_array
 
 
 def generate_json(schema):
