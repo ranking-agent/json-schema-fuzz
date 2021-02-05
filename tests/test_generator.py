@@ -42,13 +42,13 @@ def test_array():
     schema = {
         "type": "array",
         "items": {
-                "type": "string"
-            }
+            "type": "string"
+        }
     }
     output = generate_json(schema)
     assert isinstance(output, list)
-    if len(output) > 0:
-        assert isinstance(output[0], str)
+    for element in output:
+        assert isinstance(element, str)
 
 
 def test_pattern_string():
