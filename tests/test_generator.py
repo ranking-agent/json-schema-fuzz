@@ -28,6 +28,21 @@ def test_object():
     assert isinstance(output.get("a", 0), int)
 
 
+def test_allof():
+    """Test a schema with an allOf property"""
+    schema = {
+        "type": "object",
+        "allOf": [
+            {"properties": {"a": {"type": "integer"}}, "required": ["a"]},
+            {"properties": {"b": {"type": "integer"}}, "required": ["b"]},
+        ],
+    }
+    output = generate_json(schema)
+    assert isinstance(output, dict)
+    assert isinstance(output["a"], int)
+    assert isinstance(output["b"], int)
+
+
 def test_boolean():
     """Test generating booleans."""
     schema = {
