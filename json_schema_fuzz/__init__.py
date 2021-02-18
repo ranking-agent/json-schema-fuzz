@@ -65,15 +65,19 @@ def generate_json(schema):
         schema = merge(schema, subschema)
 
     type = schema.get("type", None)
-    if type == "integer":
-        return random_integer(schema)
-    elif type == "object":
-        return random_object(schema)
-    elif type == "boolean":
-        return random_boolean(schema)
-    elif type == "string":
-        return random_string(schema)
-    elif type == "array":
-        return random_array(schema)
-    else:
-        raise NotImplementedError()
+    anyof = schema.get("anyOf", None)
+    if type is not None:
+        if type == "integer":
+            return random_integer(schema)
+        elif type == "object":
+            return random_object(schema)
+        elif type == "boolean":
+            return random_boolean(schema)
+        elif type == "string":
+            return random_string(schema)
+        elif type == "array":
+            return random_array(schema)
+        else:
+            raise NotImplementedError()
+    elif anyof is not None:
+        return generate_json(random.choice(anyof))
