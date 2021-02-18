@@ -4,6 +4,8 @@ import string
 
 import exrex
 
+from .utils import merge
+
 
 def random_integer(schema):
     """Generate random integer."""
@@ -12,8 +14,15 @@ def random_integer(schema):
 
 def random_object(schema):
     """Generate random JSON object."""
+
+    # Merge allOf into the base schema
+    all_of = schema.get("allOf", [])
+    for subschema in all_of:
+        schema = merge(schema, subschema, update=True)
+
     properties = schema.get("properties", dict())
     required = schema.get("required", [])
+
     object = dict()
     for key, value in properties.items():
         if key in required or random.choice([True, False]):
