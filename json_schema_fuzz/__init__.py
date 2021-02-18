@@ -81,3 +81,5 @@ def generate_json(schema):
             raise NotImplementedError()
     elif anyof is not None:
         return generate_json(random.choice(anyof))
+    else:
+        raise NotImplementedError()
