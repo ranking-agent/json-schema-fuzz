@@ -32,3 +32,12 @@ def test_merge_doesnt_modify():
 
     assert len(c['required']) == 2
     assert len(required_a) == 1
+
+
+def test_merge_conflicting():
+    """ Test that merging two conflicting values throws a NotImplementedError """
+    a = {"multipleOf": 3}
+    b = {"multipleOf": 5}
+
+    with pytest.raises(NotImplementedError):
+        merge(a, b)
