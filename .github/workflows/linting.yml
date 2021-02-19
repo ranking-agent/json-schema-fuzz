@@ -26,4 +26,5 @@ jobs:
           VALIDATE_PYTHON_PYLINT: true
           LINTER_RULES_PATH: '.'
           PYTHON_FLAKE8_CONFIG_FILE: .flake8
+          PYTHON_ISORT_CONFIG_FILE: .isort.cfg
           PYTHON_PYLINT_CONFIG_FILE: .pylintrc
