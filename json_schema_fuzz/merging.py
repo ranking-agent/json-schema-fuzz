@@ -1,11 +1,12 @@
 """Merging."""
 import copy
+from typing import Any, Dict, List
 
 
 def merge(
-    a: dict[any, any],
-    b: dict[any, any],
-    path: list = None,
+    a: Dict[Any, Any],
+    b: Dict[Any, Any],
+    path: List[Any] = None,
 ):
     """
     Merge two JSON schemas recursively
