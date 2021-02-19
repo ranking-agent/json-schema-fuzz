@@ -2,10 +2,10 @@
 import glob
 import json
 from pathlib import Path
+
 import pytest
 
 from json_schema_fuzz.merging import merge
-
 
 THIS_DIR = Path(__file__).parent
 CASE_DIR = THIS_DIR / "merge_cases"
