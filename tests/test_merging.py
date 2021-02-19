@@ -41,12 +41,3 @@ def test_merge_conflicting():
 
     with pytest.raises(NotImplementedError):
         merge(a, b)
-
-
-def test_merge_conflicting_with_update():
-    """ Test that merging two conflicting values with update = True works """
-    a = {"multipleOf": 3}
-    b = {"multipleOf": 5}
-
-    c = merge(a, b, update=True)
-    assert c["multipleOf"] == 5

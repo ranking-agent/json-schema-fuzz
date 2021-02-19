@@ -6,12 +6,11 @@ def merge(
     a: dict[any, any],
     b: dict[any, any],
     path: list = None,
-    update: bool = False
 ):
     """
     Merge two JSON schemas recursively
 
-    Will raise exception for conflicting values unless update = True is specified.
+    Will raise exception for conflicting values.
     Based on: http://stackoverflow.com/questions/7204805/python-dictionaries-of-dictionaries-merge
     """
     if path is None:
@@ -28,8 +27,6 @@ def merge(
             elif isinstance(a[key], list) and isinstance(b[key], list):
                 # Append lists together
                 a[key].extend(b[key])
-            elif update:
-                a[key] = b[key]
             else:
                 raise NotImplementedError(
                     f"Conflicting key {key} encountered in path {path}")
