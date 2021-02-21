@@ -8,12 +8,7 @@ def merge(
     schema_b: Dict[Any, Any],
     path: List[Any] = None,
 ):
-    """
-    Merge two JSON schemas recursively
-
-    Will raise exception for conflicting values.
-    Based on: http://stackoverflow.com/questions/7204805/python-dictionaries-of-dictionaries-merge
-    """
+    """Merge two JSON schemas recursively."""
     if path is None:
         path = []
 
@@ -27,7 +22,10 @@ def merge(
             merge(schema_a[key], schema_b[key], path + [str(key)])
         elif schema_a[key] == schema_b[key]:
             pass  # same leaf value
-        elif isinstance(schema_a[key], list) and isinstance(schema_b[key], list):
+        elif (
+                isinstance(schema_a[key], list)
+                and isinstance(schema_b[key], list)
+        ):
             # Append lists together
             schema_a[key].extend(schema_b[key])
         else:
