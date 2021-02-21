@@ -4,8 +4,8 @@ from typing import Any, Dict, List
 
 
 def merge(
-    a: Dict[Any, Any],
-    b: Dict[Any, Any],
+    schema_a: Dict[Any, Any],
+    schema_b: Dict[Any, Any],
     path: List[Any] = None,
 ):
     """
@@ -18,19 +18,19 @@ def merge(
         path = []
 
     # Make a copy of a so that it doesn't get modified in place
-    a = copy.deepcopy(a)
-    for key in b:
-        if key not in a:
-            a[key] = b[key]
+    schema_a = copy.deepcopy(schema_a)
+    for key in schema_b:
+        if key not in schema_a:
+            schema_a[key] = schema_b[key]
             continue
-        if isinstance(a[key], dict) and isinstance(b[key], dict):
-            merge(a[key], b[key], path + [str(key)])
-        elif a[key] == b[key]:
+        if isinstance(schema_a[key], dict) and isinstance(schema_b[key], dict):
+            merge(schema_a[key], schema_b[key], path + [str(key)])
+        elif schema_a[key] == schema_b[key]:
             pass  # same leaf value
-        elif isinstance(a[key], list) and isinstance(b[key], list):
+        elif isinstance(schema_a[key], list) and isinstance(schema_b[key], list):
             # Append lists together
-            a[key].extend(b[key])
+            schema_a[key].extend(schema_b[key])
         else:
             raise NotImplementedError(
                 f"Conflicting key {key} encountered in path {path}")
-    return a
+    return schema_a
