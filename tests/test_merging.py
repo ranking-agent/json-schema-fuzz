@@ -35,7 +35,7 @@ def test_merge_doesnt_modify():
 
 
 def test_merge_conflicting():
-    """ Test that merging two conflicting values throws a NotImplementedError """
+    """Test that merging conflicting values throws a NotImplementedError."""
     schema_a = {"multipleOf": 3}
     schema_b = {"multipleOf": 5}
 
