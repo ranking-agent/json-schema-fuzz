@@ -26,18 +26,18 @@ def test_merging(schemas, merged):
 def test_merge_doesnt_modify():
     """ Test that merging doesn't modify input values """
     required_a = ["required_property"]
-    a = {"required": required_a}
-    b = {"required": ["another_required_property"]}
-    c = merge(a, b)
+    schema_a = {"required": required_a}
+    schema_b = {"required": ["another_required_property"]}
+    merged = merge(schema_a, schema_b)
 
-    assert len(c['required']) == 2
+    assert len(merged['required']) == 2
     assert len(required_a) == 1
 
 
 def test_merge_conflicting():
     """ Test that merging two conflicting values throws a NotImplementedError """
-    a = {"multipleOf": 3}
-    b = {"multipleOf": 5}
+    schema_a = {"multipleOf": 3}
+    schema_b = {"multipleOf": 5}
 
     with pytest.raises(NotImplementedError):
-        merge(a, b)
+        merge(schema_a, schema_b)
