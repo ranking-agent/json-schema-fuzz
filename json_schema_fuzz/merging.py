@@ -12,8 +12,10 @@ def merge(
     if path is None:
         path = []
 
-    # Make a copy of a so that it doesn't get modified in place
-    schema_a = copy.deepcopy(schema_a)
+    if len(path) == 0:
+        # Make a copy of a so that it doesn't get modified in place
+        schema_a = copy.deepcopy(schema_a)
+
     for key in schema_b:
         if key not in schema_a:
             schema_a[key] = schema_b[key]
