@@ -88,3 +88,19 @@ def test_no_pattern_string():
     }
     output = generate_json(schema)
     assert isinstance(output, str)
+
+
+def test_anyof():
+    """Test generating an object from an anyOf schema."""
+    schema = {
+        "anyOf": [
+            {
+                "type": "string",
+            },
+            {
+                "type": "integer",
+            },
+        ],
+    }
+    output = generate_json(schema)
+    assert isinstance(output, (str, int))
