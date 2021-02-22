@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
-import sys
+""" Management script to automate common commands """
 import os
+import sys
 
 
-def print_green(s):
-    GREEN = '\033[92m'
-    ENDC = '\033[0m'
-    print(f"{GREEN}{s}{ENDC}")
+GREEN = '\033[92m'
+ENDC = '\033[0m'
+
+
+def print_green(text):
+    """ Print text in green """
+    print(f"{GREEN}{text}{ENDC}")
 
 
 def run_command(cmd):
+    """ Print and run command """
     print_green(cmd)
     os.system(cmd)
 
@@ -20,8 +25,8 @@ def test(extra_args):
     and then exits.
     """
     command = """\
-    docker build -t strider-testing -f Dockerfile.test .
-    docker run -it strider-testing\
+    docker build -t json-schema-fuzz-testing -f Dockerfile.test .
+    docker run -it json-schema-fuzz-testing\
     """
     run_command(command + extra_args)
 
@@ -32,18 +37,19 @@ def coverage(extra_args):
     and display in browser
     """
     command = f"""\
-    docker rm strider-testing || true
-    docker build -t strider-testing \
+    docker rm json-schema-fuzz-testing || true
+    docker build -t json-schema-fuzz-testing \
                  -f Dockerfile.test .
-    docker run --name strider-testing strider-testing \
-            pytest --cov strider/ --cov-report html {extra_args}
-    docker cp strider-testing:/app/htmlcov /tmp/strider-cov/
-    open /tmp/strider-cov/index.html
+    docker run --name json-schema-fuzz-testing json-schema-fuzz-testing \
+            pytest --cov json_schema_fuzz/ --cov-report html {extra_args}
+    docker cp json-schema-fuzz-testing:/app/htmlcov /tmp/json-schema-fuzz-cov/
+    open /tmp/json-schema-fuzz-cov/index.html
     """
     run_command(command)
 
 
 def main():
+    """ Management script entrypoint """
     command = sys.argv[1]
     command_func = globals()[command]
     extra_args = " " + " ".join(sys.argv[2:])
