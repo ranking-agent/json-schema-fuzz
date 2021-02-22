@@ -46,5 +46,5 @@ def merge_list(schemas: List[Dict]) -> Dict:
     """ Merge a list of JSON schemas together """
     combined_schema = {}
     for schema in schemas:
-        merge(combined_schema, schema)
+        merge(combined_schema, schema, in_place=True)
     return combined_schema
