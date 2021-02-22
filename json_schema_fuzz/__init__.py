@@ -4,7 +4,7 @@ import string
 
 import exrex
 
-from .merging import merge
+from .merging import merge, merge_list
 
 
 def random_integer(schema):
@@ -64,22 +64,32 @@ def generate_json(schema):
     for subschema in all_of:
         schema = merge(schema, subschema)
 
+    any_of = schema.get("anyOf", None)
+    if any_of:
+        found = False
+        while not found:
+            # Pick a random sample of the any_of sublist
+            # and determine whether it is valid
+            chosen_anyof = random.sample(
+                any_of, random.randint(1, len(any_of)))
+            try:
+                combined_anyof_schema = merge_list(chosen_anyof)
+                found = True
+            except NotImplementedError:
+                pass
+        schema = merge(schema, combined_anyof_schema)
+
     type = schema.get("type", None)
-    anyof = schema.get("anyOf", None)
-    if type is not None:
-        if type == "integer":
-            return random_integer(schema)
-        elif type == "object":
-            return random_object(schema)
-        elif type == "boolean":
-            return random_boolean(schema)
-        elif type == "string":
-            return random_string(schema)
-        elif type == "array":
-            return random_array(schema)
-        else:
-            raise NotImplementedError()
-    elif anyof is not None:
-        return generate_json(random.choice(anyof))
+
+    if type == "integer":
+        return random_integer(schema)
+    elif type == "object":
+        return random_object(schema)
+    elif type == "boolean":
+        return random_boolean(schema)
+    elif type == "string":
+        return random_string(schema)
+    elif type == "array":
+        return random_array(schema)
     else:
         raise NotImplementedError()
