@@ -4,7 +4,7 @@ import string
 
 import exrex
 
-from .utils import merge
+from .merging import merge
 
 
 def random_integer(schema):
@@ -14,11 +14,6 @@ def random_integer(schema):
 
 def random_object(schema):
     """Generate random JSON object."""
-
-    # Merge allOf into the base schema
-    all_of = schema.get("allOf", [])
-    for subschema in all_of:
-        schema = merge(schema, subschema, update=True)
 
     properties = schema.get("properties", dict())
     required = schema.get("required", [])
@@ -63,6 +58,12 @@ def random_array(schema):
 
 def generate_json(schema):
     """Generate random JSON conforming to schema."""
+
+    # Merge allOf subschemas into the base schema
+    all_of = schema.get("allOf", [])
+    for subschema in all_of:
+        schema = merge(schema, subschema)
+
     type = schema.get("type", None)
     if type == "integer":
         return random_integer(schema)
