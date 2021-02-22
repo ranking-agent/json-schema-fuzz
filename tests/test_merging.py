@@ -41,3 +41,13 @@ def test_merge_conflicting():
 
     with pytest.raises(NotImplementedError):
         merge(schema_a, schema_b)
+
+
+def test_merge_nested():
+    """ Test that merging nested dictionaries works """
+    schema_a = {"properties": {"a": "value"}}
+    schema_b = {"properties": {"b": "value"}}
+    merged = merge(schema_a, schema_b)
+
+    assert 'a' in merged['properties']
+    assert 'b' in merged['properties']
