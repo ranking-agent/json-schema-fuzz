@@ -1,4 +1,4 @@
-"""Merging."""
+""" Operations on schemas """
 import copy
 from typing import Any, Dict, List
 
@@ -45,6 +45,9 @@ def merge(
 ALL_TYPES = ["object", "number", "array", "string", "null", "boolean"]
 
 
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-statements
 def invert(
     schema: Dict,
 ):
