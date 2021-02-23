@@ -9,12 +9,20 @@
 		"uniqueItems": true
 	},
 	"inverted": {
-		"contains": {
-			"exclusiveMaximum": 2
-		},
-		"items": {
-			"exclusiveMaximum": 3
-		},
-		"hasDuplicates": true
+		"anyOf": [
+			{
+				"contains": {
+					"exclusiveMaximum": 2
+				}
+			},
+			{
+				"items": {
+					"exclusiveMaximum": 3
+				}
+			},
+			{
+				"hasDuplicates": true
+			}
+		]
 	}
 }
