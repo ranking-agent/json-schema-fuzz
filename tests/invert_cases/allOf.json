@@ -1,0 +1,22 @@
+{
+	"schema": {
+		"allOf": [
+			{
+				"minimum": 5
+			},
+			{
+				"exclusiveMaximum": 10
+			}
+		]
+	},
+	"inverted": {
+		"anyOf": [
+			{
+				"exclusiveMaximum": 5
+			},
+			{
+				"minimum": 10
+			}
+		]
+	}
+}

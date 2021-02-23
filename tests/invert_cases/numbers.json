@@ -1,0 +1,16 @@
+{
+	"schema": {
+		"minimum": 1,
+		"exclusiveMinimum": 2,
+		"maximum": 3,
+		"exclusiveMaximum": 4,
+		"multipleOf": 5
+	},
+	"inverted": {
+		"exclusiveMaximum": 1,
+		"maximum": 2,
+		"exclusiveMinimum": 3,
+		"minimum": 4,
+		"notMultipleOf": 5
+	}
+}
