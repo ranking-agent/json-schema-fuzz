@@ -45,7 +45,7 @@ def merge(
 ALL_TYPES = ["object", "number", "array", "string", "null", "boolean"]
 
 
-def inverse(
+def invert(
     schema: Dict,
 ):
     """
@@ -65,11 +65,11 @@ def inverse(
 
     all_of = schema.get("allOf", None)
     if all_of:
-        inverted_schemas.append({"anyOf": [inverse(s) for s in all_of]})
+        inverted_schemas.append({"anyOf": [invert(s) for s in all_of]})
 
     any_of = schema.get("anyOf", None)
     if any_of:
-        inverted_schemas.append({"allOf": [inverse(s) for s in any_of]})
+        inverted_schemas.append({"allOf": [invert(s) for s in any_of]})
 
     one_of = schema.get("oneOf", None)
     if one_of:
@@ -77,7 +77,7 @@ def inverse(
         inverted_schemas.append({
             "anyOf": [
                 {
-                    "allOf": [inverse(s) for s in one_of]
+                    "allOf": [invert(s) for s in one_of]
                 }, {
                     "allOf": one_of
                 }
@@ -125,7 +125,7 @@ def inverse(
     properties = schema.get("properties", None)
     if properties:
         inverted_schemas.append({
-            "properties": {k: inverse(v) for k, v in properties.items()},
+            "properties": {k: invert(v) for k, v in properties.items()},
             "anyOf": [{"required": [k]} for k in properties.keys()],
         })
 
@@ -138,7 +138,7 @@ def inverse(
     additional_properties = schema.get("additionalProperties", None)
     if additional_properties:
         inverted_schemas.append({
-            "anyAdditionalProperties": inverse(additional_properties),
+            "anyAdditionalProperties": invert(additional_properties),
         })
 
     # Arrays
@@ -149,16 +149,16 @@ def inverse(
             item_conditions = []
             for index, item_schema in enumerate(items):
                 item_conditions.append({
-                    "items": [{}] * index + [inverse(item_schema)]
+                    "items": [{}] * index + [invert(item_schema)]
                 })
             inverted_schemas.append(
                 {"anyOf": item_conditions + [{"maxItems": len(items)}]})
         else:
-            inverted_schemas.append({"contains": inverse(items)})
+            inverted_schemas.append({"contains": invert(items)})
 
     contains = schema.get("contains", None)
     if contains:
-        inverted_schemas.append({"items": inverse(contains)})
+        inverted_schemas.append({"items": invert(contains)})
 
     unique_items = schema.get("uniqueItems", None)
     if unique_items:

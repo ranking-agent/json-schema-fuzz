@@ -1,0 +1,46 @@
+{
+	"schema": {
+		"items": [
+			{
+				"minimum": 4
+			},
+			{
+				"minimum": 5
+			},
+			{
+				"minimum": 6
+			}
+		]
+	},
+	"inverted": {
+		"anyOf": [
+			{
+				"items": [
+					{
+						"exclusiveMaximum": 4
+					}
+				]
+			},
+			{
+				"items": [
+					{},
+					{
+						"exclusiveMaximum": 5
+					}
+				]
+			},
+			{
+				"items": [
+					{},
+					{},
+					{
+						"exclusiveMaximum": 6
+					}
+				]
+			},
+			{
+				"maxItems": 3
+			}
+		]
+	}
+}

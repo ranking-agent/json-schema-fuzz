@@ -1,0 +1,12 @@
+{
+	"schema": {
+		"minLength": 2,
+		"maxLength": 5,
+		"pattern": "^hi$"
+	},
+	"inverted": {
+		"minLength": 6,
+		"maxLength": 1,
+		"pattern": "^(?:(?!^hi$).)*$"
+	}
+}
