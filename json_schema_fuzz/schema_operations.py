@@ -169,7 +169,9 @@ def invert(
 
     # Combine all schemas together and return
 
-    combined_schema = {}
-    for inverted_schema in inverted_schemas:
-        merge(combined_schema, inverted_schema, in_place=True)
-    return combined_schema
+    # To make the output simpler use a condensed output if we
+    # only generated one item
+    if len(inverted_schemas) == 1:
+        return inverted_schemas[0]
+    else:
+        return {"anyOf": inverted_schemas}
