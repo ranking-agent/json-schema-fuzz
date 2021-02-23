@@ -66,7 +66,8 @@ for filename in invert_case_files:
             (case["schema"], case["inverted"]))
 
 
-@pytest.mark.parametrize("schema,inverted", invert_cases, ids=invert_case_files)
+@pytest.mark.parametrize(
+    "schema,inverted", invert_cases, ids=invert_case_files)
 def test_invert(schema, inverted):
     """Test that the given schema results in the `inverted` schema."""
     assert invert(schema) == inverted
