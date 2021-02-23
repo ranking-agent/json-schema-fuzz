@@ -4,7 +4,7 @@ import string
 
 import exrex
 
-from .merging import merge
+from .schema_operations import merge
 
 
 def random_integer(schema):
