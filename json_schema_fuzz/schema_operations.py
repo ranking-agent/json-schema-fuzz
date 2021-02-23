@@ -155,7 +155,7 @@ def invert(
                     "items": [{}] * index + [invert(item_schema)]
                 })
             inverted_schemas.append(
-                {"anyOf": item_conditions + [{"maxItems": len(items)}]})
+                {"anyOf": item_conditions + [{"maxItems": len(items) - 1}]})
         else:
             inverted_schemas.append({"contains": invert(items)})
 
