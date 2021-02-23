@@ -1,0 +1,20 @@
+{
+	"schema": {
+		"items": {
+			"minimum": 2
+		},
+		"contains": {
+			"minimum": 3
+		},
+		"uniqueItems": true
+	},
+	"inverted": {
+		"contains": {
+			"exclusiveMaximum": 2
+		},
+		"items": {
+			"exclusiveMaximum": 3
+		},
+		"hasDuplicates": true
+	}
+}

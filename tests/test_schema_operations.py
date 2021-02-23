@@ -5,19 +5,21 @@ from pathlib import Path
 
 import pytest
 
-from json_schema_fuzz.merging import merge
+from json_schema_fuzz.schema_operations import invert, merge
 
 THIS_DIR = Path(__file__).parent
-CASE_DIR = THIS_DIR / "merge_cases"
-case_files = glob.glob(str(CASE_DIR / "*.json"))
-cases = []
-for filename in case_files:
+MERGE_CASE_DIR = THIS_DIR / "merge_cases"
+merge_case_files = glob.glob(
+    str(MERGE_CASE_DIR / "*.json"))
+merge_cases = []
+for filename in merge_case_files:
     with open(filename, "r") as stream:
         case = json.load(stream)
-        cases.append((case["schemas"], case["merged"]))
+        merge_cases.append(
+            (case["schemas"], case["merged"]))
 
 
-@pytest.mark.parametrize("schemas,merged", cases)
+@pytest.mark.parametrize("schemas,merged", merge_cases)
 def test_merging(schemas, merged):
     """Test that merging the `schemas` results in the `merged` schema."""
     assert merge(*schemas) == merged
@@ -51,3 +53,20 @@ def test_merge_nested():
 
     assert 'a' in merged['properties']
     assert 'b' in merged['properties']
+
+
+INVERT_CASE_DIR = THIS_DIR / "invert_cases"
+invert_case_files = glob.glob(
+    str(INVERT_CASE_DIR / "*.json"))
+invert_cases = []
+for filename in invert_case_files:
+    with open(filename, "r") as stream:
+        case = json.load(stream)
+        invert_cases.append(
+            (case["schema"], case["inverted"]))
+
+
+@pytest.mark.parametrize("schema,inverted", invert_cases)
+def test_invert(schema, inverted):
+    """Test that the given schema results in the `inverted` schema."""
+    assert invert(schema) == inverted
