@@ -1,0 +1,32 @@
+{
+	"schemas": [
+		{
+			"minimum": 2,
+			"maximum": 20,
+			"multipleOf": 3,
+			"notMultipleOf": [
+				7
+			]
+		},
+		{
+			"minimum": 3,
+			"maximum": 19,
+			"multipleOf": 2,
+			"notMultipleOf": 11
+		},
+		{
+			"minimum": 4,
+			"maximum": 18,
+			"multipleOf": 5
+		}
+	],
+	"merged": {
+		"minimum": 4,
+		"maximum": 18,
+		"multipleOf": 30,
+		"notMultipleOf": [
+			7,
+			11
+		]
+	}
+}
