@@ -1,0 +1,38 @@
+{
+	"schemas": [
+		{
+			"allOf": [
+				{
+					"minimum": 1
+				}
+			]
+		},
+		{
+			"allOf": [
+				{
+					"maximum": 10
+				}
+			]
+		},
+		{
+			"allOf": [
+				{
+					"multipleOf": 3
+				}
+			]
+		}
+	],
+	"merged": {
+		"allOf": [
+			{
+				"minimum": 1
+			},
+			{
+				"maximum": 10
+			},
+			{
+				"multipleOf": 3
+			}
+		]
+	}
+}

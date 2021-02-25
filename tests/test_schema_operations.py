@@ -19,7 +19,7 @@ for filename in merge_case_files:
             (case["schemas"], case["merged"]))
 
 
-@pytest.mark.parametrize("schemas,merged", merge_cases)
+@pytest.mark.parametrize("schemas,merged", merge_cases, ids=merge_case_files)
 def test_merging(schemas, merged):
     """Test that merging the `schemas` results in the `merged` schema."""
     assert merge(*schemas) == merged

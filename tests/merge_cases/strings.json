@@ -1,0 +1,16 @@
+{
+	"schemas": [
+		{
+			"minLength": 2,
+			"maxLength": 20
+		},
+		{
+			"minLength": 3,
+			"maxLength": 19
+		}
+	],
+	"merged": {
+		"minLength": 3,
+		"maxLength": 19
+	}
+}
