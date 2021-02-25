@@ -1,45 +1,118 @@
 """ Operations on schemas """
 import copy
+import itertools
+import math
 from typing import Any, Dict, List
 
 
-def merge(
-    schema_a: Dict[Any, Any],
-    schema_b: Dict[Any, Any],
-    path: List[Any] = None,
-    in_place: bool = False,
-):
-    """Merge two JSON schemas recursively."""
-    if path is None:
-        path = []
+def remove_allOf(schema):
+    """
+    For a given schema merge in allOf
+    until it is removed entirely
+    """
 
-    if not in_place:
-        # Make a copy of a so that it doesn't get modified in place
-        schema_a = copy.deepcopy(schema_a)
+    while True:
+        all_of = schema.get("allOf", [])
+        if len(all_of) == 0:
+            break
+        for subschema in all_of:
+            merge(schema, subschema, in_place=True)
 
-    for key in schema_b:
-        if key not in schema_a:
-            schema_a[key] = schema_b[key]
-            continue
-        if isinstance(schema_a[key], dict) and isinstance(schema_b[key], dict):
-            merge(schema_a[key], schema_b[key],
-                  path=path + [str(key)],
-                  in_place=True)
-        elif schema_a[key] == schema_b[key]:
-            pass  # same leaf value
-        elif (
-                isinstance(schema_a[key], list)
-                and isinstance(schema_b[key], list)
-        ):
-            # Append lists together
-            schema_a[key].extend(schema_b[key])
-        else:
-            raise NotImplementedError(
-                f"Conflicting key {key} encountered in path {path}")
-    if in_place:
-        return None
+    # Remove allOf now that it is empty
+    schema.pop("allOf", None)
+
+
+def lcm(numbers):
+    """
+    Find least common multiple of a list of numbers
+
+    TODO replace with math.lcm after updating to Python 3.9
+    """
+    product = 1
+    gcd = 1
+    for num in numbers:
+        gcd = math.gcd(gcd, num)
+        product *= num
+    return product // gcd
+
+
+def get_val_or_none(dictionaries, key):
+    """
+    Get list of values from dictionaries.
+    If it is not present in any dictionary, return None.
+    """
+    values = []
+    for dictionary in dictionaries:
+        value = dictionary.get(key, None)
+        if value:
+            values.append(value)
+    if len(values) > 0:
+        return values
     else:
-        return schema_a
+        return None
+
+
+def merge(
+    *schemas: List[Dict[Any, Any]],
+) -> Dict[Any, Any]:
+    """
+    Merge a list of JSON schemas recursively.
+
+    Merging schemas here means that all schemas
+    must be true for result schema to be true.
+    """
+
+    merged_schema = {}
+
+    # Combinations
+
+    all_of_values = get_val_or_none(schemas, "allOf")
+    if all_of_values:
+        merged_schema["allOf"] = list(
+            itertools.chain(*all_of_values)
+        )
+
+    # Numbers
+
+    minimum_values = get_val_or_none(schemas, "minimum")
+    if minimum_values:
+        merged_schema["minimum"] = max(minimum_values)
+    exclusive_minimum_values = get_val_or_none(schemas, "exclusiveMinimum")
+    if exclusive_minimum_values:
+        merged_schema["exclusiveMinimum"] = max(exclusive_minimum_values)
+
+    maximum_values = get_val_or_none(schemas, "maximum")
+    if maximum_values:
+        merged_schema["maximum"] = min(maximum_values)
+    exclusive_maximum_values = get_val_or_none(schemas, "exclusiveMaximum")
+    if exclusive_maximum_values:
+        merged_schema["exclusiveMaximum"] = max(exclusive_maximum_values)
+
+    multiple_of_values = get_val_or_none(schemas, "multipleOf")
+    if multiple_of_values:
+        merged_schema["multipleOf"] = lcm(multiple_of_values)
+
+    not_multiple_of_values = get_val_or_none(schemas, "notMultipleOf")
+    if not_multiple_of_values:
+        merged_schema["notMultipleOf"] = []
+        # notMultipleOf values might be list or number
+        for not_multiple_of_value in not_multiple_of_values:
+            if isinstance(not_multiple_of_value, list):
+                merged_schema["notMultipleOf"].extend(not_multiple_of_value)
+            else:
+                merged_schema["notMultipleOf"].append(not_multiple_of_value)
+
+    # Strings
+
+    min_length_values = get_val_or_none(schemas, "minLength")
+    if min_length_values:
+        merged_schema["minLength"] = max(min_length_values)
+
+    max_length_values = get_val_or_none(schemas, "maxLength")
+    if max_length_values:
+        merged_schema["maxLength"] = min(max_length_values)
+
+    return merged_schema
 
 
 ALL_TYPES = ["object", "number", "array", "string", "null", "boolean"]
