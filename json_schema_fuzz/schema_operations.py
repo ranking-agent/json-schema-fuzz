@@ -72,6 +72,12 @@ def merge(
             itertools.chain(*all_of_values)
         )
 
+    any_of_values = get_val_or_none(schemas, "anyOf")
+    if any_of_values:
+        merged_schema["anyOf"] = []
+        for anyof_permutation in itertools.product(*any_of_values):
+            merged_schema["anyOf"].append(merge(*anyof_permutation))
+
     # Numbers
 
     minimum_values = get_val_or_none(schemas, "minimum")
@@ -86,7 +92,7 @@ def merge(
         merged_schema["maximum"] = min(maximum_values)
     exclusive_maximum_values = get_val_or_none(schemas, "exclusiveMaximum")
     if exclusive_maximum_values:
-        merged_schema["exclusiveMaximum"] = max(exclusive_maximum_values)
+        merged_schema["exclusiveMaximum"] = min(exclusive_maximum_values)
 
     multiple_of_values = get_val_or_none(schemas, "multipleOf")
     if multiple_of_values:
