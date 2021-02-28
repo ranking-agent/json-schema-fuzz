@@ -1,0 +1,68 @@
+{
+	"schemas": [
+		{
+			"properties": {
+				"a": {
+					"minimum": 2
+				}
+			},
+			"required": [
+				"a"
+			],
+			"additionalProperties": {
+				"minimum": 4
+			},
+			"anyAdditionalProperty": {
+				"multipleOf": 4
+			}
+		},
+		{
+			"properties": {
+				"a": {
+					"maximum": 5
+				},
+				"b": {
+					"minimum": 2
+				}
+			},
+			"required": [
+				"b"
+			],
+			"additionalProperties": {
+				"maximum": 7
+			},
+			"anyAdditionalProperty": [
+				{
+					"notMultipleOf": 7
+				}
+			]
+		}
+	],
+	"merged": {
+		"properties": {
+			"a": {
+				"minimum": 2,
+				"maximum": 5
+			},
+			"b": {
+				"minimum": 2
+			}
+		},
+		"required": [
+			"a",
+			"b"
+		],
+		"additionalProperties": {
+			"minimum": 4,
+			"maximum": 7
+		},
+		"anyAdditionalProperty": [
+			{
+				"multipleOf": 4
+			},
+			{
+				"notMultipleOf": 7
+			}
+		]
+	}
+}
