@@ -170,6 +170,41 @@ def merge(
     if max_length_values:
         merged_schema["maxLength"] = min(max_length_values)
 
+    # Object
+
+    properties_values = get_val_or_none(schemas, "properties")
+    if properties_values:
+        merged_schema["properties"] = {}
+        all_keys = set().union(*(d.keys() for d in properties_values))
+        for key in all_keys:
+            all_values = [d.get(key, {}) for d in properties_values]
+            merged_schema["properties"][key] = merge(*all_values)
+
+    required_values = get_val_or_none(schemas, "required")
+    if required_values:
+        merged_schema["required"] = []
+        for required_value in required_values:
+            merged_schema["required"].extend(required_value)
+
+    additional_properties_values = get_val_or_none(
+        schemas, "additionalProperties")
+    if additional_properties_values:
+        merged_schema["additionalProperties"] = merge(
+            *additional_properties_values)
+
+    any_additional_property_values = get_val_or_none(
+        schemas, "anyAdditionalProperty")
+    if any_additional_property_values:
+        merged_schema["anyAdditionalProperty"] = []
+        # anyAdditionalProperty values might be list or schema
+        for any_additional_property_value in any_additional_property_values:
+            if isinstance(any_additional_property_value, list):
+                merged_schema["anyAdditionalProperty"].extend(
+                    any_additional_property_value)
+            else:
+                merged_schema["anyAdditionalProperty"].append(
+                    any_additional_property_value)
+
     # Array
 
     has_duplicates_values = get_val_or_none(schemas, "hasDuplicates")
