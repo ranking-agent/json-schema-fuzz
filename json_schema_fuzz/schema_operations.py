@@ -52,6 +52,16 @@ def get_val_or_none(dictionaries, key):
         return None
 
 
+def all_equal(x):
+    """ Check every array element is equal """
+    return x.count(x[0]) == len(x)
+
+
+class SchemaIsFalse(Exception):
+    """ Raised if schema will not validate true for any values """
+    pass
+
+
 def merge(
     *schemas: List[Dict[Any, Any]],
 ) -> Dict[Any, Any]:
@@ -77,6 +87,48 @@ def merge(
         merged_schema["anyOf"] = []
         for anyof_permutation in itertools.product(*any_of_values):
             merged_schema["anyOf"].append(merge(*anyof_permutation))
+
+    one_of_values = get_val_or_none(schemas, "oneOf")
+    if one_of_values:
+
+        # Build inverse values for all schemas provided
+        inverted_oneof_values = []
+        for one_of_list in one_of_values:
+            inverted_oneof_values.append([
+                invert(s) for s in one_of_list
+            ])
+
+        new_anyof_values = []
+
+        # Build permutations where one value is true and the rest are false
+        one_of_indexes = [range(len(v)) for v in one_of_values]
+        # During this permutation, use the index provided as the one "true"
+        # and have the rest of the indexes be false
+        for true_indexes in itertools.product(*one_of_indexes):
+            # Make a copy of the inverted one_of value
+            current_permutation = copy.deepcopy(inverted_oneof_values)
+
+            # Replace inverted values with given values at the true_indexes
+            for outer_list_index, _ in enumerate(current_permutation):
+                inner_list_index = true_indexes[outer_list_index]
+                current_permutation[outer_list_index][inner_list_index] = \
+                    one_of_values[outer_list_index][inner_list_index]
+
+            # Merge and save
+            denested_schemas = [
+                subschema for outer_list in current_permutation for subschema in outer_list]
+            new_anyof_values.append(merge(*denested_schemas))
+
+        # If there are already anyof values,
+        # call merge() again to merge them with the
+        # new anyOf values
+        if 'anyOf' in merged_schema:
+            merged_schema["anyOf"] = merge(
+                {"anyOf": merged_schema["anyOf"]},
+                {"anyOf": new_anyof_values}
+            )
+        else:
+            merged_schema["anyOf"] = new_anyof_values
 
     # Numbers
 
@@ -117,6 +169,20 @@ def merge(
     max_length_values = get_val_or_none(schemas, "maxLength")
     if max_length_values:
         merged_schema["maxLength"] = min(max_length_values)
+
+    # Array
+
+    has_duplicates_values = get_val_or_none(schemas, "hasDuplicates")
+    if has_duplicates_values:
+        if not all_equal(has_duplicates_values):
+            raise SchemaIsFalse()
+        merged_schema["hasDuplicates"] = has_duplicates_values[0]
+
+    unique_items_values = get_val_or_none(schemas, "uniqueItems")
+    if unique_items_values:
+        if not all_equal(unique_items_values):
+            raise SchemaIsFalse()
+        merged_schema["uniqueItems"] = unique_items_values[0]
 
     return merged_schema
 
@@ -245,6 +311,10 @@ def invert(
     unique_items = schema.get("uniqueItems", None)
     if unique_items:
         inverted_schemas.append({"hasDuplicates": unique_items})
+
+    has_duplicates = schema.get("hasDuplicates", None)
+    if has_duplicates:
+        inverted_schemas.append({"uniqueItems": has_duplicates})
 
     # Combine all schemas together and return
 
