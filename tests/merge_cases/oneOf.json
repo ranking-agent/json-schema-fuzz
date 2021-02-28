@@ -1,0 +1,56 @@
+{
+	"schemas": [
+		{
+			"oneOf": [
+				{
+					"minimum": 1
+				},
+				{
+					"multipleOf": 3
+				}
+			]
+		},
+		{
+			"oneOf": [
+				{
+					"minLength": 5
+				},
+				{
+					"hasDuplicates": true
+				}
+			]
+		}
+	],
+	"merged": {
+		"anyOf": [
+			{
+				"minimum": 1,
+				"notMultipleOf": [
+					3
+				],
+				"minLength": 5,
+				"uniqueItems": true
+			},
+			{
+				"minimum": 1,
+				"notMultipleOf": [
+					3
+				],
+				"maxLength": 4,
+				"hasDuplicates": true
+			},
+			{
+				"exclusiveMaximum": 1,
+				"multipleOf": 3,
+				"minLength": 5,
+				"uniqueItems": true
+			},
+			{
+				"exclusiveMaximum": 1,
+				"multipleOf": 3,
+				"maxLength": 4,
+				"hasDuplicates": true
+			}
+		]
+	}
+}
