@@ -52,6 +52,14 @@ def get_val_or_none(dictionaries, key):
         return None
 
 
+def get_index_or_default(given_list, index, default=None):
+    """ Get index from a list or get a default value """
+    try:
+        return given_list[index]
+    except IndexError:
+        return default
+
+
 def all_equal(x):
     """ Check every array element is equal """
     return x.count(x[0]) == len(x)
@@ -206,6 +214,31 @@ def merge(
                     any_additional_property_value)
 
     # Array
+
+    items_values = get_val_or_none(schemas, "items")
+    if items_values:
+        if isinstance(items_values[0], list):
+            largest_index = max([len(items) for items in items_values])
+            merged_schema["items"] = []
+            for index in range(largest_index):
+                merged_schema["items"].append(
+                    merge(*[
+                        get_index_or_default(items, index, {})
+                        for items in items_values
+                    ])
+                )
+        else:
+            merged_schema["items"] = merge(*items_values)
+
+    contains_values = get_val_or_none(schemas, "contains")
+    if contains_values:
+        merged_schema["contains"] = []
+        # contains values might be list or schema
+        for contains_value in contains_values:
+            if isinstance(contains_value, list):
+                merged_schema["contains"].extend(contains_value)
+            else:
+                merged_schema["contains"].append(contains_value)
 
     has_duplicates_values = get_val_or_none(schemas, "hasDuplicates")
     if has_duplicates_values:
