@@ -52,20 +52,39 @@ def get_index_or_default(
         return default
 
 
-def all_equal(
-        given_list: list
-) -> bool:
-    """ Check every array element is equal """
-    return given_list.count(given_list[0]) == len(given_list)
-
-
 class SchemaIsFalse(Exception):
     """ Raised if schema will not validate true for any values """
+
+
+def merge_listify(values):
+    """
+    Merge values by converting them to lists
+    and concatenating them.
+    """
+    output = []
+    for value in values:
+        if isinstance(value, list):
+            output.extend(value)
+        else:
+            output.append(value)
+    return output
+
+
+def merge_all_equal(values):
+    """
+    Merge values and raise SchemaIsFalse exception
+    if all values are not equal
+    """
+    if not values.count(values[0]) == len(values):
+        raise SchemaIsFalse()
+    return values[0]
 
 
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
+
+
 def merge(
     *schemas: List[Dict[Any, Any]],
 ) -> Dict[Any, Any]:
@@ -78,13 +97,43 @@ def merge(
 
     merged_schema = {}
 
-    # Combinations
+    # Dictionary of properties and how
+    # to merge them together
+    property_merging_functions = {
+        # Combinations
+        "allOf": merge_listify,
 
-    all_of_values = get_val_or_none(schemas, "allOf")
-    if all_of_values:
-        merged_schema["allOf"] = list(
-            itertools.chain(*all_of_values)
-        )
+        # Numbers
+        "maximum": min,
+        "exclusiveMaximum": min,
+        "minimum": max,
+        "exclusiveMinimum": max,
+        "multipleOf": lcm,
+        "notMultipleOf": merge_listify,
+
+        # String
+        "minLength": max,
+        "maxLength": min,
+
+        # Object
+        "required": merge_listify,
+        "anyAdditionalProperty": merge_listify,
+        "additionalProperties": lambda values: merge(*values),
+
+        # Array
+        "hasDuplicates": merge_all_equal,
+        "uniqueItems": merge_all_equal,
+        "contains": merge_listify,
+    }
+
+    # Process properties from dictionary
+    for prop, merge_function in property_merging_functions.items():
+        values = get_val_or_none(schemas, prop)
+        if values:
+            merged_schema[prop] = merge_function(values)
+
+    # Process remaining properties that have more
+    # complex merging requirements
 
     any_of_values = get_val_or_none(schemas, "anyOf")
     if any_of_values:
@@ -136,48 +185,6 @@ def merge(
         else:
             merged_schema["anyOf"] = new_anyof_values
 
-    # Numbers
-
-    minimum_values = get_val_or_none(schemas, "minimum")
-    if minimum_values:
-        merged_schema["minimum"] = max(minimum_values)
-    exclusive_minimum_values = get_val_or_none(schemas, "exclusiveMinimum")
-    if exclusive_minimum_values:
-        merged_schema["exclusiveMinimum"] = max(exclusive_minimum_values)
-
-    maximum_values = get_val_or_none(schemas, "maximum")
-    if maximum_values:
-        merged_schema["maximum"] = min(maximum_values)
-    exclusive_maximum_values = get_val_or_none(schemas, "exclusiveMaximum")
-    if exclusive_maximum_values:
-        merged_schema["exclusiveMaximum"] = min(exclusive_maximum_values)
-
-    multiple_of_values = get_val_or_none(schemas, "multipleOf")
-    if multiple_of_values:
-        merged_schema["multipleOf"] = lcm(multiple_of_values)
-
-    not_multiple_of_values = get_val_or_none(schemas, "notMultipleOf")
-    if not_multiple_of_values:
-        merged_schema["notMultipleOf"] = []
-        # notMultipleOf values might be list or number
-        for not_multiple_of_value in not_multiple_of_values:
-            if isinstance(not_multiple_of_value, list):
-                merged_schema["notMultipleOf"].extend(not_multiple_of_value)
-            else:
-                merged_schema["notMultipleOf"].append(not_multiple_of_value)
-
-    # Strings
-
-    min_length_values = get_val_or_none(schemas, "minLength")
-    if min_length_values:
-        merged_schema["minLength"] = max(min_length_values)
-
-    max_length_values = get_val_or_none(schemas, "maxLength")
-    if max_length_values:
-        merged_schema["maxLength"] = min(max_length_values)
-
-    # Object
-
     properties_values = get_val_or_none(schemas, "properties")
     if properties_values:
         merged_schema["properties"] = {}
@@ -185,33 +192,6 @@ def merge(
         for key in all_keys:
             all_values = [d.get(key, {}) for d in properties_values]
             merged_schema["properties"][key] = merge(*all_values)
-
-    required_values = get_val_or_none(schemas, "required")
-    if required_values:
-        merged_schema["required"] = []
-        for required_value in required_values:
-            merged_schema["required"].extend(required_value)
-
-    additional_properties_values = get_val_or_none(
-        schemas, "additionalProperties")
-    if additional_properties_values:
-        merged_schema["additionalProperties"] = merge(
-            *additional_properties_values)
-
-    any_additional_property_values = get_val_or_none(
-        schemas, "anyAdditionalProperty")
-    if any_additional_property_values:
-        merged_schema["anyAdditionalProperty"] = []
-        # anyAdditionalProperty values might be list or schema
-        for any_additional_property_value in any_additional_property_values:
-            if isinstance(any_additional_property_value, list):
-                merged_schema["anyAdditionalProperty"].extend(
-                    any_additional_property_value)
-            else:
-                merged_schema["anyAdditionalProperty"].append(
-                    any_additional_property_value)
-
-    # Array
 
     items_values = get_val_or_none(schemas, "items")
     if items_values:
@@ -227,28 +207,6 @@ def merge(
                 )
         else:
             merged_schema["items"] = merge(*items_values)
-
-    contains_values = get_val_or_none(schemas, "contains")
-    if contains_values:
-        merged_schema["contains"] = []
-        # contains values might be list or schema
-        for contains_value in contains_values:
-            if isinstance(contains_value, list):
-                merged_schema["contains"].extend(contains_value)
-            else:
-                merged_schema["contains"].append(contains_value)
-
-    has_duplicates_values = get_val_or_none(schemas, "hasDuplicates")
-    if has_duplicates_values:
-        if not all_equal(has_duplicates_values):
-            raise SchemaIsFalse()
-        merged_schema["hasDuplicates"] = has_duplicates_values[0]
-
-    unique_items_values = get_val_or_none(schemas, "uniqueItems")
-    if unique_items_values:
-        if not all_equal(unique_items_values):
-            raise SchemaIsFalse()
-        merged_schema["uniqueItems"] = unique_items_values[0]
 
     return merged_schema
 
