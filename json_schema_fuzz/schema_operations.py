@@ -92,8 +92,11 @@ def merge(
     """
     Merge a list of JSON schemas recursively.
 
-    Merging schemas here means that all schemas
-    must be true for result schema to be true.
+    Merging schemas here means that an instance
+    must validate against all provided schemas
+    in order to validate against the combined schema.
+
+    This is equivalent to an allOf with the provided schemas.
     """
 
     merged_schema = {}
