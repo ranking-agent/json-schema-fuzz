@@ -1,0 +1,42 @@
+{
+	"schemas": [
+		{
+			"items": [
+				{
+					"minimum": 2
+				},
+				{
+					"minimum": 3
+				}
+			]
+		},
+		{
+			"items": [
+				{
+					"maximum": 3
+				},
+				{
+					"maximum": 4
+				},
+				{
+					"maximum": 5
+				}
+			]
+		}
+	],
+	"merged": {
+		"items": [
+			{
+				"minimum": 2,
+				"maximum": 3
+			},
+			{
+				"minimum": 3,
+				"maximum": 4
+			},
+			{
+				"maximum": 5
+			}
+		]
+	}
+}
