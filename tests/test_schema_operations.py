@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from json_schema_fuzz.schema_operations import invert, merge
+from json_schema_fuzz.schema_operations import invert, merge, SchemaIsFalse
 
 THIS_DIR = Path(__file__).parent
 MERGE_CASE_DIR = THIS_DIR / "merge_cases"
@@ -37,22 +37,12 @@ def test_merge_doesnt_modify():
 
 
 def test_merge_conflicting():
-    """Test that merging conflicting values throws a NotImplementedError."""
-    schema_a = {"multipleOf": 3}
-    schema_b = {"multipleOf": 5}
+    """Test that merging conflicting values throws a SchemaIsFalse error."""
+    schema_a = {"hasDuplicates": True}
+    schema_b = {"hasDuplicates": False}
 
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(SchemaIsFalse):
         merge(schema_a, schema_b)
-
-
-def test_merge_nested():
-    """ Test that merging nested dictionaries works """
-    schema_a = {"properties": {"a": "value"}}
-    schema_b = {"properties": {"b": "value"}}
-    merged = merge(schema_a, schema_b)
-
-    assert 'a' in merged['properties']
-    assert 'b' in merged['properties']
 
 
 INVERT_CASE_DIR = THIS_DIR / "invert_cases"
