@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 
 
 def lcm(
-        numbers: list[int]
+        numbers: List[int]
 ) -> int:
     """
     Find least common multiple of a list of numbers
