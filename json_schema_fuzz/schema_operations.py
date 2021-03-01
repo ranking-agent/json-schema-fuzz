@@ -5,7 +5,9 @@ import math
 from typing import Any, Dict, List
 
 
-def lcm(numbers):
+def lcm(
+        numbers: list[int]
+) -> int:
     """
     Find least common multiple of a list of numbers
 
@@ -19,7 +21,10 @@ def lcm(numbers):
     return product // gcd
 
 
-def get_val_or_none(dictionaries, key):
+def get_val_or_none(
+    dictionaries: List[dict],
+    key
+):
     """
     Get list of values from dictionaries.
     If it is not present in any dictionary, return None.
@@ -35,7 +40,11 @@ def get_val_or_none(dictionaries, key):
         return None
 
 
-def get_index_or_default(given_list, index, default=None):
+def get_index_or_default(
+        given_list: list,
+        index: int,
+        default=None
+):
     """ Get index from a list or get a default value """
     try:
         return given_list[index]
@@ -43,7 +52,9 @@ def get_index_or_default(given_list, index, default=None):
         return default
 
 
-def all_equal(given_list):
+def all_equal(
+        given_list: list
+) -> bool:
     """ Check every array element is equal """
     return given_list.count(given_list[0]) == len(given_list)
 
