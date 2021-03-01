@@ -5,23 +5,6 @@ import math
 from typing import Any, Dict, List
 
 
-def remove_allOf(schema):
-    """
-    For a given schema merge in allOf
-    until it is removed entirely
-    """
-
-    while True:
-        all_of = schema.get("allOf", [])
-        if len(all_of) == 0:
-            break
-        for subschema in all_of:
-            merge(schema, subschema, in_place=True)
-
-    # Remove allOf now that it is empty
-    schema.pop("allOf", None)
-
-
 def lcm(numbers):
     """
     Find least common multiple of a list of numbers
@@ -44,7 +27,7 @@ def get_val_or_none(dictionaries, key):
     values = []
     for dictionary in dictionaries:
         value = dictionary.get(key, None)
-        if value:
+        if value is not None:
             values.append(value)
     if len(values) > 0:
         return values
