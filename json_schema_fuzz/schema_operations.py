@@ -43,16 +43,18 @@ def get_index_or_default(given_list, index, default=None):
         return default
 
 
-def all_equal(x):
+def all_equal(given_list):
     """ Check every array element is equal """
-    return x.count(x[0]) == len(x)
+    return given_list.count(given_list[0]) == len(given_list)
 
 
 class SchemaIsFalse(Exception):
     """ Raised if schema will not validate true for any values """
-    pass
 
 
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-statements
 def merge(
     *schemas: List[Dict[Any, Any]],
 ) -> Dict[Any, Any]:
@@ -107,7 +109,9 @@ def merge(
 
             # Merge and save
             denested_schemas = [
-                subschema for outer_list in current_permutation for subschema in outer_list]
+                subschema for outer_list in current_permutation
+                for subschema in outer_list
+            ]
             new_anyof_values.append(merge(*denested_schemas))
 
         # If there are already anyof values,
