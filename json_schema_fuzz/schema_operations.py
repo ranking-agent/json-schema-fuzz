@@ -21,13 +21,14 @@ def lcm(
     return product // gcd
 
 
-def get_val_or_none(
+def get_from_all(
     dictionaries: List[dict],
-    key
+    key,
+    default=None
 ):
     """
     Get list of values from dictionaries.
-    If it is not present in any dictionary, return None.
+    If it is not present in any dictionary, return the default value.
     """
     values = []
     for dictionary in dictionaries:
@@ -37,7 +38,7 @@ def get_val_or_none(
     if len(values) > 0:
         return values
     else:
-        return None
+        return default
 
 
 def get_index_or_default(
@@ -128,20 +129,20 @@ def merge(
 
     # Process properties from dictionary
     for prop, merge_function in property_merging_functions.items():
-        values = get_val_or_none(schemas, prop)
+        values = get_from_all(schemas, prop)
         if values:
             merged_schema[prop] = merge_function(values)
 
     # Process remaining properties that have more
     # complex merging requirements
 
-    any_of_values = get_val_or_none(schemas, "anyOf")
+    any_of_values = get_from_all(schemas, "anyOf")
     if any_of_values:
         merged_schema["anyOf"] = []
         for anyof_permutation in itertools.product(*any_of_values):
             merged_schema["anyOf"].append(merge(*anyof_permutation))
 
-    one_of_values = get_val_or_none(schemas, "oneOf")
+    one_of_values = get_from_all(schemas, "oneOf")
     if one_of_values:
 
         # Build inverse values for all schemas provided
@@ -185,7 +186,7 @@ def merge(
         else:
             merged_schema["anyOf"] = new_anyof_values
 
-    properties_values = get_val_or_none(schemas, "properties")
+    properties_values = get_from_all(schemas, "properties")
     if properties_values:
         merged_schema["properties"] = {}
         all_keys = {
@@ -197,7 +198,7 @@ def merge(
             all_values = [d.get(key, {}) for d in properties_values]
             merged_schema["properties"][key] = merge(*all_values)
 
-    items_values = get_val_or_none(schemas, "items")
+    items_values = get_from_all(schemas, "items")
     if items_values:
         if isinstance(items_values[0], list):
             largest_index = max([len(items) for items in items_values])
