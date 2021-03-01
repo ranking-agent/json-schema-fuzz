@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from json_schema_fuzz.schema_operations import invert, merge, SchemaIsFalse
+from json_schema_fuzz.schema_operations import SchemaIsFalse, invert, merge
 
 THIS_DIR = Path(__file__).parent
 MERGE_CASE_DIR = THIS_DIR / "merge_cases"
