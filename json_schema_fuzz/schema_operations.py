@@ -188,7 +188,11 @@ def merge(
     properties_values = get_val_or_none(schemas, "properties")
     if properties_values:
         merged_schema["properties"] = {}
-        all_keys = set().union(*(d.keys() for d in properties_values))
+        all_keys = {
+            key
+            for d in properties_values
+            for key in d.keys()
+        }
         for key in all_keys:
             all_values = [d.get(key, {}) for d in properties_values]
             merged_schema["properties"][key] = merge(*all_values)
