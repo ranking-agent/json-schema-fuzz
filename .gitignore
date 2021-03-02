@@ -4,3 +4,6 @@ __pycache__/
 **/venv/
 .vscode/
 **.egg-info
+super-linter.log
+.vim/
+.DS_Store
