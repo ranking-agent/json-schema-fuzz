@@ -1,0 +1,8 @@
+{
+  "type": "integer",
+  "notMultipleOf": [
+    7,
+    25,
+    83
+  ]
+}
