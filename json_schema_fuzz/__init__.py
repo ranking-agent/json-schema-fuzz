@@ -30,7 +30,19 @@ def random_integer(schema):
     )
     multiple_of = schema.get("multipleOf", 1)
 
-    return multiple_of * random.randint(minimum, maximum)
+    not_multiple_of = schema.get("notMultipleOf", [])
+    if not isinstance(not_multiple_of, list):
+        not_multiple_of = [not_multiple_of]
+
+    for _ in range(MAX_REJECTED_SAMPLES):
+        # Generate new value
+        value = multiple_of * random.randint(minimum, maximum)
+        # Verify
+        is_multiple_of = [value % num == 0 for num in not_multiple_of]
+        if any(is_multiple_of):
+            continue
+        return value
+    raise RejectionSamplingFailed()
 
 
 def random_object(schema):

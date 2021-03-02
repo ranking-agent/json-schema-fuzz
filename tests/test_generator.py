@@ -9,6 +9,24 @@ import pytest
 
 from json_schema_fuzz import generate_json
 
+# Create a custom validator
+# for our custom properties
+
+
+def not_multiple_of_validator(validator, value, instance, schema):
+    if not isinstance(value, list):
+        value = [value]
+    for num in value:
+        if instance % num == 0:
+            yield jsonschema.ValidationError(
+                f"{instance} is a multiple of {num}")
+
+
+ExtendedValidator = jsonschema.validators.extend(
+    jsonschema.Draft7Validator,
+    validators={"notMultipleOf": not_multiple_of_validator}
+)
+
 THIS_DIR = Path(__file__).parent
 GENERATE_CASE_DIR = THIS_DIR / "generate_cases"
 generate_case_files = glob.glob(
@@ -28,6 +46,7 @@ def test_generate_validate(schema):
     jsonschema library.
     """
     num_generated_values = 100
+    validator = ExtendedValidator(schema)
 
     for _ in range(num_generated_values):
         value = generate_json(schema)
