@@ -1,40 +1,40 @@
 """Test JSON schema fuzzer."""
+import glob
+import json
+from pathlib import Path
 import re
+
+from jsonschema import validate
+import pytest
 
 from json_schema_fuzz import generate_json
 
-
-def test_integer():
-    """Test generating integers."""
-    schema = {
-        "type": "integer"
-    }
-    output = generate_json(schema)
-    assert isinstance(output, int)
-
-
-def test_object():
-    """Test generating integers."""
-    schema = {
-        "type": "object",
-        "properties": {
-            "a": {
-                "type": "integer"
-            }
-        }
-    }
-    output = generate_json(schema)
-    assert isinstance(output, dict)
-    assert isinstance(output.get("a", 0), int)
+THIS_DIR = Path(__file__).parent
+GENERATE_CASE_DIR = THIS_DIR / "generate_cases"
+generate_case_files = glob.glob(
+    str(GENERATE_CASE_DIR / "**/*.json"))
+generate_cases = []
+for filename in generate_case_files:
+    with open(filename, "r") as stream:
+        case = json.load(stream)
+        generate_cases.append(case)
 
 
-def test_boolean():
-    """Test generating booleans."""
-    schema = {
-        "type": "boolean"
-    }
-    output = generate_json(schema)
-    assert isinstance(output, bool)
+@pytest.mark.parametrize("schema", generate_cases, ids=generate_case_files)
+def test_generate_validate(schema):
+    """
+    Test that generated json from the schema
+    validates against the schema using the
+    jsonschema library.
+    """
+    num_generated_values = 100
+
+    generated_json_values = [
+        generate_json(schema) for _ in range(num_generated_values)
+    ]
+
+    for value in generated_json_values:
+        validate(value, schema=schema)
 
 
 def test_array():
