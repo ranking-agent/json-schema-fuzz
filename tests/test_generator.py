@@ -4,8 +4,8 @@ import json
 import re
 from pathlib import Path
 
-import pytest
 import jsonschema
+import pytest
 
 from json_schema_fuzz import generate_json
 
