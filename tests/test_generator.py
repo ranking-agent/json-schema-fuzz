@@ -1,11 +1,11 @@
 """Test JSON schema fuzzer."""
 import glob
 import json
-from pathlib import Path
 import re
+from pathlib import Path
 
-from jsonschema import validate
 import pytest
+from jsonschema import validate
 
 from json_schema_fuzz import generate_json
 
