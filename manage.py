@@ -47,6 +47,29 @@ def coverage(extra_args):
     run_command(command)
 
 
+def lint(extra_args):
+    """
+    Run Github super-linter and print results
+    Uses the same flags as the linting CI job
+    """
+    command = f"""\
+    docker run -v $(pwd):/tmp/lint \
+        -e RUN_LOCAL=true \
+        -e OUTPUT_DETAILS=detailed \
+        -e SUPPRESS_POSSUM=true \
+        -e VALIDATE_ALL_CODEBASE=false \
+        -e VALIDATE_PYTHON_ISORT=true \
+        -e VALIDATE_PYTHON_FLAKE8=true \
+        -e VALIDATE_PYTHON_PYLINT=true \
+        -e LINTER_RULES_PATH='.' \
+        -e PYTHON_FLAKE8_CONFIG_FILE=.flake8 \
+        -e PYTHON_ISORT_CONFIG_FILE=.isort.cfg \
+        -e PYTHON_PYLINT_CONFIG_FILE=.pylintrc \
+        github/super-linter {extra_args}
+    """
+    run_command(command)
+
+
 def main():
     """ Management script entrypoint """
     command = sys.argv[1]
