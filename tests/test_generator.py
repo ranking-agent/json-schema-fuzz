@@ -29,11 +29,8 @@ def test_generate_validate(schema):
     """
     num_generated_values = 100
 
-    generated_json_values = [
-        generate_json(schema) for _ in range(num_generated_values)
-    ]
-
-    for value in generated_json_values:
+    for _ in range(num_generated_values):
+        value = generate_json(schema)
         validate(value, schema=schema)
 
 
