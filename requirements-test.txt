@@ -4,3 +4,4 @@ isort
 pylint
 pytest
 pytest-cov
+jsonschema
