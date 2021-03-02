@@ -1,0 +1,5 @@
+{
+  "type": "string",
+  "pattern": "^startswith.*$",
+  "minLength": 15
+}

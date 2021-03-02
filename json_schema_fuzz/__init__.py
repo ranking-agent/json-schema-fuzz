@@ -6,10 +6,31 @@ import exrex
 
 from .schema_operations import merge
 
+MAX_REJECTED_SAMPLES = 1000
+
+
+class RejectionSamplingFailed(Exception):
+    """ 
+    Failed to generate sample that satisfies all criteria
+    """
+
 
 def random_integer(schema):
     """Generate random integer."""
-    return random.randint(0, 10)
+    default_min = 0
+    default_max = 100
+
+    minimum = max(
+        schema.get("minimum", default_min),
+        schema.get("exclusiveMinimum", default_min) + 1
+    )
+    maximum = min(
+        schema.get("maximum", default_max),
+        schema.get("exclusiveMaximum", default_max) - 1
+    )
+    multiple_of = schema.get("multipleOf", 1)
+
+    return multiple_of * random.randint(minimum, maximum)
 
 
 def random_object(schema):
@@ -32,15 +53,25 @@ def random_boolean(schema):
 
 def random_string(schema):
     """Generate random string."""
-    pattern = schema.get("pattern", None)
-    if pattern is None:  # check if string is restricted to a regex pattern
-        lowercase_letters = string.ascii_lowercase
-        word_length = random.randrange(1, 20)
-        new_word_list = random.choices(lowercase_letters, k=word_length)
-        new_word = "".join(new_word_list)
-        return new_word
-    else:
-        return exrex.getone(pattern)
+
+    min_length = schema.get("minLength", 0)
+    max_length = schema.get("maxLength", min_length + 50)
+
+    for _ in range(MAX_REJECTED_SAMPLES):
+        # Generate new value
+        pattern = schema.get("pattern", None)
+        if pattern is not None:
+            # Use exrex to generate pattern
+            value = exrex.getone(pattern)
+        else:
+            # Use random.choices
+            lowercase_letters = string.ascii_lowercase
+            length = random.randint(min_length, max_length)
+            value = "".join(random.choices(lowercase_letters, k=length))
+
+        if min_length <= len(value) and len(value) <= max_length:
+            return value
+    raise RejectionSamplingFailed()
 
 
 def random_array(schema):
