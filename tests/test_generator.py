@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 import pytest
-from jsonschema import validate
+import jsonschema
 
 from json_schema_fuzz import generate_json
 
@@ -31,7 +31,16 @@ def test_generate_validate(schema):
 
     for _ in range(num_generated_values):
         value = generate_json(schema)
-        validate(value, schema=schema)
+        try:
+            jsonschema.validate(value, schema=schema)
+        except jsonschema.exceptions.ValidationError as exc_info:
+            pytest.fail(f"""
+                Failed to validate instance:
+                {json.dumps(value)}
+
+                Validation information:
+                {exc_info}
+            """)
 
 
 def test_array():
