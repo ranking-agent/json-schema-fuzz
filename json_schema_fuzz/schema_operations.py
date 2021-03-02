@@ -53,10 +53,6 @@ def get_index_or_default(
         return default
 
 
-class SchemaIsFalse(Exception):
-    """ Raised if schema will not validate true for any values """
-
-
 def merge_listify(values):
     """
     Merge values by converting them to lists
@@ -69,16 +65,6 @@ def merge_listify(values):
         else:
             output.append(value)
     return output
-
-
-def merge_all_equal(values):
-    """
-    Merge values and raise SchemaIsFalse exception
-    if all values are not equal
-    """
-    if not values.count(values[0]) == len(values):
-        raise SchemaIsFalse()
-    return values[0]
 
 
 # pylint: disable=too-many-branches
@@ -125,8 +111,6 @@ def merge(
         "additionalProperties": lambda values: merge(*values),
 
         # Array
-        "hasDuplicates": merge_all_equal,
-        "uniqueItems": merge_all_equal,
         "contains": merge_listify,
     }
 
@@ -200,6 +184,14 @@ def merge(
         for key in all_keys:
             all_values = [d.get(key, {}) for d in properties_values]
             merged_schema["properties"][key] = merge(*all_values)
+
+    has_duplicates_values = get_from_all(schemas, "hasDuplicates")
+    if has_duplicates_values and any(has_duplicates_values):
+        merged_schema["hasDuplicates"] = True
+
+    unique_items_values = get_from_all(schemas, "uniqueItems")
+    if unique_items_values and any(unique_items_values):
+        merged_schema["uniqueItems"] = True
 
     items_values = get_from_all(schemas, "items")
     if items_values:
@@ -340,13 +332,13 @@ def invert(
     if contains:
         inverted_schemas.append({"items": invert(contains)})
 
-    unique_items = schema.get("uniqueItems", None)
+    unique_items = schema.get("uniqueItems", False)
     if unique_items:
-        inverted_schemas.append({"hasDuplicates": unique_items})
+        inverted_schemas.append({"hasDuplicates": True})
 
-    has_duplicates = schema.get("hasDuplicates", None)
+    has_duplicates = schema.get("hasDuplicates", False)
     if has_duplicates:
-        inverted_schemas.append({"uniqueItems": has_duplicates})
+        inverted_schemas.append({"uniqueItems": True})
 
     # Combine all schemas together and return
 

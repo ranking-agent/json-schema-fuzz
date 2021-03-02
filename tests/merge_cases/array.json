@@ -16,7 +16,7 @@
 			"contains": {
 				"maximum": 5
 			},
-			"uniqueItems": true
+			"uniqueItems": false
 		}
 	],
 	"merged": {
