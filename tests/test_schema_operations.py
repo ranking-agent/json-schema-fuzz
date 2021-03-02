@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from json_schema_fuzz.schema_operations import SchemaIsFalse, invert, merge
+from json_schema_fuzz.schema_operations import invert, merge
 
 THIS_DIR = Path(__file__).parent
 MERGE_CASE_DIR = THIS_DIR / "merge_cases"
@@ -34,15 +34,6 @@ def test_merge_doesnt_modify():
 
     assert len(merged['required']) == 2
     assert len(required_a) == 1
-
-
-def test_merge_conflicting():
-    """Test that merging conflicting values throws a SchemaIsFalse error."""
-    schema_a = {"hasDuplicates": True}
-    schema_b = {"hasDuplicates": False}
-
-    with pytest.raises(SchemaIsFalse):
-        merge(schema_a, schema_b)
 
 
 INVERT_CASE_DIR = THIS_DIR / "invert_cases"
