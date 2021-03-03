@@ -211,7 +211,8 @@ def merge(
     return merged_schema
 
 
-ALL_TYPES = ["object", "number", "array", "string", "null", "boolean"]
+ALL_TYPES = ["object", "number", "array",
+             "string", "null", "boolean", "integer"]
 
 
 # pylint: disable=too-many-branches
