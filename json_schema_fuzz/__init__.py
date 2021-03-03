@@ -153,7 +153,7 @@ def random_array(schema):
 
 
 def generate_json_from_string(schema_str):
-    """ Parse schema from string and gneerate random JSON data """
+    """ Parse schema from string and generate random JSON data """
     schema = json.loads(
         schema_str,
         parse_int=Decimal,
