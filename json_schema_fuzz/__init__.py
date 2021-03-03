@@ -10,7 +10,7 @@ MAX_REJECTED_SAMPLES = 1000
 
 
 class RejectionSamplingFailed(Exception):
-    """ 
+    """
     Failed to generate sample that satisfies all criteria
     """
 
