@@ -1,8 +1,8 @@
 """JSON schema fuzzer."""
-from decimal import Decimal
 import json
 import random
 import string
+from decimal import Decimal
 
 import exrex
 
