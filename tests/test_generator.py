@@ -14,6 +14,7 @@ from json_schema_fuzz import generate_json
 
 
 def not_multiple_of_validator(validator, value, instance, schema):
+    """ jsonschema validator function for custom notMultipleOf property """
     if not isinstance(value, list):
         value = [value]
     for num in value:
@@ -51,7 +52,7 @@ def test_generate_validate(schema):
     for _ in range(num_generated_values):
         value = generate_json(schema)
         try:
-            jsonschema.validate(value, schema=schema)
+            validator.validate(value)
         except jsonschema.exceptions.ValidationError as exc_info:
             pytest.fail(f"""
                 Failed to validate instance:
