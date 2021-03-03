@@ -36,8 +36,10 @@ def random_integer(schema):
 
     for _ in range(MAX_REJECTED_SAMPLES):
         # Generate new value
-        value = multiple_of * random.randint(minimum, maximum)
+        value = random.randint(minimum, maximum)
         # Verify
+        if value % multiple_of != 0:
+            continue
         is_multiple_of = [value % num == 0 for num in not_multiple_of]
         if any(is_multiple_of):
             continue
