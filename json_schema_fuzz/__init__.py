@@ -1,4 +1,6 @@
 """JSON schema fuzzer."""
+from decimal import Decimal
+import json
 import random
 import string
 
@@ -15,10 +17,21 @@ class RejectionSamplingFailed(Exception):
     """
 
 
+def listify(value):
+    """ If value is not a list wrap it in a list """
+    if isinstance(value, list):
+        return value
+    else:
+        return [value]
+
+
 def random_integer(schema):
     """Generate random integer."""
-    default_min = 0
-    default_max = 100
+
+    multiple_of = schema.get("multipleOf", Decimal(1))
+
+    default_min = Decimal(1 * multiple_of)
+    default_max = Decimal(100 * multiple_of)
 
     minimum = max(
         schema.get("minimum", default_min),
@@ -28,7 +41,6 @@ def random_integer(schema):
         schema.get("maximum", default_max),
         schema.get("exclusiveMaximum", default_max) - 1
     )
-    multiple_of = schema.get("multipleOf", 1)
 
     not_multiple_of = schema.get("notMultipleOf", [])
     if not isinstance(not_multiple_of, list):
@@ -37,13 +49,52 @@ def random_integer(schema):
     for _ in range(MAX_REJECTED_SAMPLES):
         # Generate new value
         value = random.randint(minimum, maximum)
+
         # Verify
         if value % multiple_of != 0:
             continue
         is_multiple_of = [value % num == 0 for num in not_multiple_of]
         if any(is_multiple_of):
             continue
-        return value
+        return int(value)
+    raise RejectionSamplingFailed()
+
+
+def random_number(schema):
+    """Generate random number."""
+    default_min = Decimal(1)
+    default_max = Decimal(100)
+    decimal_digits = 4
+
+    smallest_interval = Decimal(10 ** -decimal_digits)
+
+    minimum = max(
+        schema.get("minimum", default_min),
+        schema.get("exclusiveMinimum", default_min) - smallest_interval
+    )
+    maximum = min(
+        schema.get("maximum", default_max),
+        schema.get("exclusiveMaximum", default_max) + smallest_interval
+    )
+    multiple_of = schema.get("multipleOf", None)
+
+    not_multiple_of = schema.get("notMultipleOf", [])
+    if not isinstance(not_multiple_of, list):
+        not_multiple_of = [not_multiple_of]
+
+    for _ in range(MAX_REJECTED_SAMPLES):
+        float_value = random.uniform(float(minimum), float(maximum))
+        value = Decimal(
+            str(round(float_value, decimal_digits))
+        )
+
+        # Verify
+        if multiple_of and value % multiple_of != 0:
+            continue
+        is_multiple_of = [value % num == 0 for num in not_multiple_of]
+        if any(is_multiple_of):
+            continue
+        return float(value)
     raise RejectionSamplingFailed()
 
 
@@ -101,6 +152,16 @@ def random_array(schema):
     return output_array
 
 
+def generate_json_from_string(schema_str):
+    """ Parse schema from string and gneerate random JSON data """
+    schema = json.loads(
+        schema_str,
+        parse_int=Decimal,
+        parse_float=Decimal,
+    )
+    return generate_json(schema)
+
+
 def generate_json(schema):
     """Generate random JSON conforming to schema."""
 
@@ -109,16 +170,22 @@ def generate_json(schema):
     for subschema in all_of:
         schema = merge(schema, subschema)
 
-    type = schema.get("type", None)
-    if type == "integer":
+    if "type" not in schema:
+        raise NotImplementedError(f"No type available in schema: {schema}")
+    possible_types = listify(schema["type"])
+    chosen_type = random.choice(possible_types)
+
+    if chosen_type == "number":
+        return random_number(schema)
+    elif chosen_type == "integer":
         return random_integer(schema)
-    elif type == "object":
+    elif chosen_type == "object":
         return random_object(schema)
-    elif type == "boolean":
+    elif chosen_type == "boolean":
         return random_boolean(schema)
-    elif type == "string":
+    elif chosen_type == "string":
         return random_string(schema)
-    elif type == "array":
+    elif chosen_type == "array":
         return random_array(schema)
     else:
         raise NotImplementedError()

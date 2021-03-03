@@ -1,0 +1,7 @@
+{
+	"type": "number",
+	"notMultipleOf": [
+		0.02,
+		0.03
+	]
+}
