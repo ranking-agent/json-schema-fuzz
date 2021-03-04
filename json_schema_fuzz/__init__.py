@@ -29,12 +29,11 @@ def random_integer(schema):
 
     minimum = max(
         schema.get("minimum", default_min),
-        schema.get("exclusiveMinimum", default_min) - 1
+        schema.get("exclusiveMinimum", default_min) + 1
     )
-    # Python ranges are exclusive on the maximum
     maximum = min(
-        schema.get("maximum", default_max) + 1,
-        schema.get("exclusiveMaximum", default_max)
+        schema.get("maximum", default_max),
+        schema.get("exclusiveMaximum", default_max) - 1
     )
 
     not_multiple_of = schema.get("notMultipleOf", [])
@@ -59,37 +58,45 @@ def random_integer(schema):
 
 def random_number(schema):
     """Generate random number."""
-    default_min = Decimal(1)
-    default_max = Decimal(100)
-    decimal_digits = 4
 
+    decimal_digits = 4
     smallest_interval = 10 ** Decimal(-decimal_digits)
 
-    minimum = max(
-        schema.get("minimum", default_min),
-        schema.get("exclusiveMinimum", default_min) - smallest_interval
-    )
-    maximum = min(
-        schema.get("maximum", default_max),
-        schema.get("exclusiveMaximum", default_max) + smallest_interval
-    )
     multiple_of = schema.get("multipleOf", smallest_interval)
+
+    if "minimum" in schema or "exclusiveMinimum" in schema:
+        minimum = max(
+            schema.get("minimum", Decimal("-Infinity")),
+            schema.get("exclusiveMinimum", Decimal("-Infinity"))
+            + smallest_interval
+        )
+    else:
+        minimum = Decimal(1) * multiple_of
+
+    if "maximum" in schema or "exclusiveMaximum" in schema:
+        maximum = min(
+            schema.get("maximum", Decimal("Infinity")),
+            schema.get("exclusiveMaximum", Decimal("Infinity"))
+            - smallest_interval
+        )
+    else:
+        maximum = Decimal(100) * multiple_of
+
+    # Range can flip if multiple_of is <1
+    # so we sort it
+    minimum, maximum = sorted((minimum, maximum))
 
     not_multiple_of = schema.get("notMultipleOf", [])
     if not isinstance(not_multiple_of, list):
         not_multiple_of = [not_multiple_of]
 
-    possible_values = list(
-        multiples_in_range(
+    for _ in range(MAX_REJECTED_SAMPLES):
+        value = random_multiple_in_range(
             minimum,
             maximum,
             multiple_of,
             precision=decimal_digits
         )
-    )
-
-    for _ in range(MAX_REJECTED_SAMPLES):
-        value = random.choice(possible_values)
 
         # Verify
         is_multiple_of = [value % num == 0 for num in not_multiple_of]
