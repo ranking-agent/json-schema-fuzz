@@ -1,5 +1,6 @@
 """JSON schema fuzzer."""
 import json
+import math
 import random
 import string
 from decimal import Decimal
@@ -7,7 +8,7 @@ from decimal import Decimal
 import exrex
 
 from .schema_operations import merge
-from .utils import ALL_TYPES, listify
+from .utils import ALL_TYPES, listify, random_multiple_in_range
 
 MAX_REJECTED_SAMPLES = 1000
 
@@ -28,11 +29,12 @@ def random_integer(schema):
 
     minimum = max(
         schema.get("minimum", default_min),
-        schema.get("exclusiveMinimum", default_min) + 1
+        schema.get("exclusiveMinimum", default_min) - 1
     )
+    # Python ranges are exclusive on the maximum
     maximum = min(
-        schema.get("maximum", default_max),
-        schema.get("exclusiveMaximum", default_max) - 1
+        schema.get("maximum", default_max) + 1,
+        schema.get("exclusiveMaximum", default_max)
     )
 
     not_multiple_of = schema.get("notMultipleOf", [])
@@ -41,11 +43,13 @@ def random_integer(schema):
 
     for _ in range(MAX_REJECTED_SAMPLES):
         # Generate new value
-        value = random.randint(minimum, maximum)
+        value = random_multiple_in_range(
+            minimum,
+            maximum,
+            multiple_of
+        )
 
         # Verify
-        if value % multiple_of != 0:
-            continue
         is_multiple_of = [value % num == 0 for num in not_multiple_of]
         if any(is_multiple_of):
             continue
@@ -59,7 +63,7 @@ def random_number(schema):
     default_max = Decimal(100)
     decimal_digits = 4
 
-    smallest_interval = Decimal(10 ** -decimal_digits)
+    smallest_interval = 10 ** Decimal(-decimal_digits)
 
     minimum = max(
         schema.get("minimum", default_min),
@@ -69,21 +73,25 @@ def random_number(schema):
         schema.get("maximum", default_max),
         schema.get("exclusiveMaximum", default_max) + smallest_interval
     )
-    multiple_of = schema.get("multipleOf", None)
+    multiple_of = schema.get("multipleOf", smallest_interval)
 
     not_multiple_of = schema.get("notMultipleOf", [])
     if not isinstance(not_multiple_of, list):
         not_multiple_of = [not_multiple_of]
 
-    for _ in range(MAX_REJECTED_SAMPLES):
-        float_value = random.uniform(float(minimum), float(maximum))
-        value = Decimal(
-            str(round(float_value, decimal_digits))
+    possible_values = list(
+        multiples_in_range(
+            minimum,
+            maximum,
+            multiple_of,
+            precision=decimal_digits
         )
+    )
+
+    for _ in range(MAX_REJECTED_SAMPLES):
+        value = random.choice(possible_values)
 
         # Verify
-        if multiple_of and value % multiple_of != 0:
-            continue
         is_multiple_of = [value % num == 0 for num in not_multiple_of]
         if any(is_multiple_of):
             continue
