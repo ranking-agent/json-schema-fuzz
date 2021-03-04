@@ -7,7 +7,8 @@ from pathlib import Path
 import jsonschema
 import pytest
 
-from json_schema_fuzz import generate_json, generate_json_from_string
+from json_schema_fuzz import generate_json
+from json_schema_fuzz.utils import custom_json_loads
 
 # Create a custom validator
 # for our custom properties
@@ -35,8 +36,10 @@ generate_case_files = glob.glob(
 generate_cases = []
 for filename in generate_case_files:
     with open(filename, "r") as stream:
-        case = stream.read()
-        generate_cases.append(case)
+        case_string = stream.read()
+        generate_cases.append(
+            custom_json_loads(case_string)
+        )
 
 
 @pytest.mark.parametrize("schema", generate_cases, ids=generate_case_files)
@@ -47,10 +50,10 @@ def test_generate_validate(schema):
     jsonschema library.
     """
     num_generated_values = 100
-    validator = ExtendedValidator(json.loads(schema))
+    validator = ExtendedValidator(schema)
 
     for _ in range(num_generated_values):
-        value = generate_json_from_string(schema)
+        value = generate_json(schema)
         try:
             validator.validate(value)
         except jsonschema.exceptions.ValidationError as exc_info:

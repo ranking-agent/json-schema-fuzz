@@ -101,7 +101,7 @@ def random_number(schema):
         is_multiple_of = [value % num == 0 for num in not_multiple_of]
         if any(is_multiple_of):
             continue
-        return float(value)
+        return value
     raise RejectionSamplingFailed()
 
 
