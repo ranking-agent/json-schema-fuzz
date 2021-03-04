@@ -7,6 +7,7 @@ from decimal import Decimal
 import exrex
 
 from .schema_operations import merge
+from .utils import ALL_TYPES, listify
 
 MAX_REJECTED_SAMPLES = 1000
 
@@ -15,14 +16,6 @@ class RejectionSamplingFailed(Exception):
     """
     Failed to generate sample that satisfies all criteria
     """
-
-
-def listify(value):
-    """ If value is not a list wrap it in a list """
-    if isinstance(value, list):
-        return value
-    else:
-        return [value]
 
 
 def random_integer(schema):
@@ -170,22 +163,24 @@ def generate_json(schema):
     for subschema in all_of:
         schema = merge(schema, subschema)
 
-    if "type" not in schema:
-        raise NotImplementedError(f"No type available in schema: {schema}")
-    possible_types = listify(schema["type"])
-    chosen_type = random.choice(possible_types)
+    if "type" in schema:
+        possible_types = listify(schema["type"])
+    else:
+        possible_types = ALL_TYPES
 
-    if chosen_type == "number":
+    instance_type = random.choice(possible_types)
+
+    if instance_type == "number":
         return random_number(schema)
-    elif chosen_type == "integer":
+    elif instance_type == "integer":
         return random_integer(schema)
-    elif chosen_type == "object":
+    elif instance_type == "object":
         return random_object(schema)
-    elif chosen_type == "boolean":
+    elif instance_type == "boolean":
         return random_boolean(schema)
-    elif chosen_type == "string":
+    elif instance_type == "string":
         return random_string(schema)
-    elif chosen_type == "array":
+    elif instance_type == "array":
         return random_array(schema)
     else:
         raise NotImplementedError()
