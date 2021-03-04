@@ -1,24 +1,9 @@
 """ Operations on schemas """
 import copy
 import itertools
-import math
 from typing import Any, Dict, List
 
-
-def lcm(
-        numbers: List[int]
-) -> int:
-    """
-    Find least common multiple of a list of numbers
-
-    TODO replace with math.lcm after updating to Python 3.9
-    """
-    product = 1
-    gcd = 1
-    for num in numbers:
-        gcd = math.gcd(gcd, num)
-        product *= num
-    return product // gcd
+from .utils import ALL_TYPES, lcm
 
 
 def get_from_all(
@@ -209,10 +194,6 @@ def merge(
             merged_schema["items"] = merge(*items_values)
 
     return merged_schema
-
-
-ALL_TYPES = ["object", "number", "array",
-             "string", "null", "boolean", "integer"]
 
 
 # pylint: disable=too-many-branches

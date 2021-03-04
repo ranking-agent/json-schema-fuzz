@@ -31,7 +31,7 @@ ExtendedValidator = jsonschema.validators.extend(
 THIS_DIR = Path(__file__).parent
 GENERATE_CASE_DIR = THIS_DIR / "generate_cases"
 generate_case_files = glob.glob(
-    str(GENERATE_CASE_DIR / "**/*.json"))
+    str(GENERATE_CASE_DIR / "**/*.json"), recursive=True)
 generate_cases = []
 for filename in generate_case_files:
     with open(filename, "r") as stream:
