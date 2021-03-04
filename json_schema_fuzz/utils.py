@@ -34,7 +34,7 @@ def lcm(
 
 def random_multiple_in_range(start, stop, multiple, precision=0):
     """
-    Sample a random multiple of a number within a specified range
+    Sample a random multiple of a number within a specified range (inclusive)
 
     Supports decimal values using the precision parameter
     """
@@ -42,10 +42,9 @@ def random_multiple_in_range(start, stop, multiple, precision=0):
     first_multiple = round(start / multiple, precision) * multiple
     last_multiple = round(stop / multiple, precision) * multiple
 
-    num_multiples = int(
-        last_multiple - first_multiple
-    ) / multiple
+    num_multiples = (int(last_multiple - first_multiple) / multiple)
 
     instance_multiple = random.randint(0, num_multiples)
 
-    return multiple * instance_multiple + first_multiple
+    instance_value = multiple * instance_multiple + first_multiple
+    return instance_value
