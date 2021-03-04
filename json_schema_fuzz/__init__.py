@@ -155,6 +155,7 @@ def generate_json_from_string(schema_str):
     return generate_json(schema)
 
 
+# pylint: disable=too-many-return-statements
 def generate_json(schema):
     """Generate random JSON conforming to schema."""
 
@@ -182,5 +183,7 @@ def generate_json(schema):
         return random_string(schema)
     elif instance_type == "array":
         return random_array(schema)
+    elif instance_type == "null":
+        return None
     else:
         raise NotImplementedError()
