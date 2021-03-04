@@ -1,10 +1,21 @@
 """ Utility functions and constants for fuzzer module """
+import json
 import math
 import random
+from decimal import Decimal
 from typing import List
 
 ALL_TYPES = ["object", "number", "array",
              "string", "null", "boolean", "integer"]
+
+
+def custom_json_loads(input_string):
+    """ Load JSON using Python's decimal type for numbers """
+    return json.loads(
+        input_string,
+        parse_float=Decimal,
+        parse_int=Decimal,
+    )
 
 
 def listify(value):
@@ -41,7 +52,7 @@ def random_multiple_in_range(start, stop, multiple, precision=0):
     first_multiple = round(start / multiple, precision) * multiple
     last_multiple = round(stop / multiple, precision) * multiple
 
-    num_multiples = (int(last_multiple - first_multiple) / multiple)
+    num_multiples = int((last_multiple - first_multiple) / multiple)
 
     instance_multiple = random.randint(0, num_multiples)
 
