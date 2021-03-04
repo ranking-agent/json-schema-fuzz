@@ -1,6 +1,5 @@
 """JSON schema fuzzer."""
 import json
-import math
 import random
 import string
 from decimal import Decimal

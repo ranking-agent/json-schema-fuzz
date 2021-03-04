@@ -2,7 +2,6 @@
 import math
 import random
 from typing import List
-from decimal import Decimal
 
 ALL_TYPES = ["object", "number", "array",
              "string", "null", "boolean", "integer"]
