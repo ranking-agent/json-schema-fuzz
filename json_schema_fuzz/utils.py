@@ -1,6 +1,8 @@
 """ Utility functions and constants for fuzzer module """
 import math
+import random
 from typing import List
+from decimal import Decimal
 
 ALL_TYPES = ["object", "number", "array",
              "string", "null", "boolean", "integer"]
@@ -28,3 +30,22 @@ def lcm(
         gcd = math.gcd(gcd, num)
         product *= num
     return product // gcd
+
+
+def random_multiple_in_range(start, stop, multiple, precision=0):
+    """
+    Sample a random multiple of a number within a specified range
+
+    Supports decimal values using the precision parameter
+    """
+
+    first_multiple = round(start / multiple, precision) * multiple
+    last_multiple = round(stop / multiple, precision) * multiple
+
+    num_multiples = int(
+        last_multiple - first_multiple
+    ) / multiple
+
+    instance_multiple = random.randint(0, num_multiples)
+
+    return multiple * instance_multiple + first_multiple
