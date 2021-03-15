@@ -3,8 +3,8 @@ import glob
 import re
 from pathlib import Path
 
-import jsonschema
 import jsonpickle
+import jsonschema
 import pytest
 
 from json_schema_fuzz import generate_json

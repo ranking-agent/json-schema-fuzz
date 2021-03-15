@@ -7,7 +7,7 @@ from decimal import Decimal
 import exrex
 
 from .schema_operations import merge
-from .utils import ALL_TYPES, listify, random_multiple_in_range, lcm
+from .utils import ALL_TYPES, listify, random_multiple_in_range, lcm, custom_json_loads
 
 MAX_REJECTED_SAMPLES = 1000
 
@@ -183,11 +183,7 @@ def random_array(schema):
 
 def generate_json_from_string(schema_str):
     """ Parse schema from string and generate random JSON data """
-    schema = json.loads(
-        schema_str,
-        parse_int=Decimal,
-        parse_float=Decimal,
-    )
+    schema = custom_json_loads(schema_str)
     return generate_json(schema)
 
 
@@ -200,10 +196,7 @@ def generate_json(schema):
     for subschema in all_of:
         schema = merge(schema, subschema)
 
-    if "type" in schema:
-        possible_types = listify(schema["type"])
-    else:
-        possible_types = ALL_TYPES
+    possible_types = listify(schema.get("type", ALL_TYPES))
 
     instance_type = random.choice(possible_types)
 
