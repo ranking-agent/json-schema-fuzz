@@ -7,7 +7,7 @@ from decimal import Decimal
 import exrex
 
 from .schema_operations import merge
-from .utils import ALL_TYPES, listify, random_multiple_in_range
+from .utils import ALL_TYPES, listify, random_multiple_in_range, lcm
 
 MAX_REJECTED_SAMPLES = 1000
 
@@ -58,32 +58,55 @@ def random_integer(schema):
 def random_number(schema):
     """Generate random number."""
 
-    decimal_digits = 4
-    smallest_interval = 10 ** Decimal(-decimal_digits)
+    minimum = schema.get("minimum", None)
+    exclusive_minimum = schema.get("exclusiveMinimum", None)
+    minimum = max(
+        minimum or Decimal("-Infinity"),
+        exclusive_minimum or Decimal("-Infinity")
+    )
+    if minimum == Decimal("-Infinity"):
+        minimum = None
 
-    multiple_of = schema.get("multipleOf", smallest_interval)
+    maximum = schema.get("maximum", None)
+    exclusive_maximum = schema.get("exclusiveMaximum", None)
+    maximum = min(
+        maximum or Decimal("Infinity"),
+        exclusive_maximum or Decimal("Infinity")
+    )
+    if maximum == Decimal("Infinity"):
+        maximum = None
 
-    if "minimum" in schema or "exclusiveMinimum" in schema:
-        minimum = max(
-            schema.get("minimum", Decimal("-Infinity")),
-            schema.get("exclusiveMinimum", Decimal("-Infinity"))
-            + smallest_interval
+    multiple_of = schema.get("multipleOf", None)
+
+    # Sample continuously if not given multiple_of
+    if not multiple_of:
+        if minimum and not maximum:
+            maximum = minimum + 100
+        elif maximum and not minimum:
+            minimum = maximum - 100
+        elif not minimum and not maximum:
+            # Use defualt range
+            minimum = -100
+            maximum = 100
+
+        # We don't have to worry about notMultipleOf
+        # because it's a continuous sample (infintesimal odds)
+        return Decimal(
+            random.uniform(float(minimum), float(maximum))
         )
-    else:
-        minimum = Decimal(1) * multiple_of
 
-    if "maximum" in schema or "exclusiveMaximum" in schema:
-        maximum = min(
-            schema.get("maximum", Decimal("Infinity")),
-            schema.get("exclusiveMaximum", Decimal("Infinity"))
-            - smallest_interval
-        )
-    else:
-        maximum = Decimal(100) * multiple_of
-
-    # Range can flip if multiple_of is <1
-    # so we sort it
-    minimum, maximum = sorted((minimum, maximum))
+    # Use multiple_of to sample
+    if minimum and not maximum:
+        given_range = multiple_of / minimum
+        maximum = multiple_of * given_range
+    elif maximum and not minimum:
+        given_range = maximum / multiple_of
+        minimum = multiple_of / given_range
+    elif not maximum and not minimum:
+        # Use defualt range
+        given_range = 100
+        maximum = multiple_of * given_range
+        minimum = multiple_of / given_range
 
     not_multiple_of = schema.get("notMultipleOf", [])
     if not isinstance(not_multiple_of, list):
@@ -94,7 +117,6 @@ def random_number(schema):
             minimum,
             maximum,
             multiple_of,
-            precision=decimal_digits
         )
 
         # Verify
