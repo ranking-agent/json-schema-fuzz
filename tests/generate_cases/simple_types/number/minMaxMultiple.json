@@ -1,0 +1,6 @@
+{
+	"type": "number",
+	"minimum": 2,
+	"maximum": 10,
+	"multipleOf": 3
+}
