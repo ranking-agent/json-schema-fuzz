@@ -7,7 +7,8 @@ from decimal import Decimal
 import exrex
 
 from .schema_operations import merge
-from .utils import ALL_TYPES, listify, random_multiple_in_range, lcm, custom_json_loads
+from .utils import (ALL_TYPES, custom_json_loads, lcm, listify,
+                    random_multiple_in_range)
 
 MAX_REJECTED_SAMPLES = 1000
 
