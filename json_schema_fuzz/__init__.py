@@ -1,5 +1,4 @@
 """JSON schema fuzzer."""
-import json
 import random
 import string
 from decimal import Decimal
@@ -7,7 +6,7 @@ from decimal import Decimal
 import exrex
 
 from .schema_operations import merge
-from .utils import (ALL_TYPES, custom_json_loads, lcm, listify,
+from .utils import (ALL_TYPES, custom_json_loads, listify,
                     random_multiple_in_range)
 
 MAX_REJECTED_SAMPLES = 1000
