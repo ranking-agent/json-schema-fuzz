@@ -42,15 +42,15 @@ def lcm(
     return product // gcd
 
 
-def random_multiple_in_range(start, stop, multiple, precision=0):
+def random_multiple_in_range(start, stop, multiple):
     """
     Sample a random multiple of a number within a specified range (inclusive)
 
-    Supports decimal values using the precision parameter
+    Supports decimal values
     """
 
-    first_multiple = round(start / multiple, precision) * multiple
-    last_multiple = round(stop / multiple, precision) * multiple
+    first_multiple = math.ceil(start / multiple) * multiple
+    last_multiple = math.floor(stop / multiple) * multiple
 
     num_multiples = int((last_multiple - first_multiple) / multiple)
 
