@@ -1,10 +1,10 @@
 """Test JSON schema fuzzer."""
 import glob
-import json
 import re
 from pathlib import Path
 
 import jsonschema
+import jsonpickle
 import pytest
 
 from json_schema_fuzz import generate_json
@@ -59,7 +59,7 @@ def test_generate_validate(schema):
         except jsonschema.exceptions.ValidationError as exc_info:
             pytest.fail(f"""
                 Failed to validate instance:
-                {json.dumps(value)}
+                {jsonpickle.encode(value)}
 
                 Validation information:
                 {exc_info}
