@@ -18,22 +18,60 @@ class RejectionSamplingFailed(Exception):
     """
 
 
+def get_minimum_maximum(schema):
+    """
+    Pull minimum and maximum from a schema
+
+    Returns None if the value is not provided
+    """
+
+    if schema["type"] == "integer":
+        exclusive_added_value = 1
+    else:
+        exclusive_added_value = 0
+
+    minimum = schema.get("minimum", None)
+    exclusive_minimum = schema.get("exclusiveMinimum", None)
+    minimum = max(
+        minimum if minimum is not None else Decimal("-Infinity"),
+        exclusive_minimum + exclusive_added_value if exclusive_minimum is not None else Decimal(
+            "-Infinity")
+    )
+    if minimum == Decimal("-Infinity"):
+        minimum = None
+
+    maximum = schema.get("maximum", None)
+    exclusive_maximum = schema.get("exclusiveMaximum", None)
+    maximum = min(
+        maximum if maximum is not None else Decimal("Infinity"),
+        exclusive_maximum - exclusive_added_value if exclusive_maximum is not None else Decimal(
+            "Infinity")
+    )
+    if maximum == Decimal("Infinity"):
+        maximum = None
+
+    return minimum, maximum
+
+
 def random_integer(schema):
     """Generate random integer."""
 
     multiple_of = schema.get("multipleOf", Decimal(1))
 
-    default_min = Decimal(1 * multiple_of)
-    default_max = Decimal(100 * multiple_of)
+    minimum, maximum = get_minimum_maximum(schema)
 
-    minimum = max(
-        schema.get("minimum", default_min),
-        schema.get("exclusiveMinimum", default_min) + 1
-    )
-    maximum = min(
-        schema.get("maximum", default_max),
-        schema.get("exclusiveMaximum", default_max) - 1
-    )
+    default_range = 100 * multiple_of
+
+    if minimum is not None and maximum is None:
+        maximum = minimum + default_range
+    elif maximum is not None and minimum is None:
+        minimum = maximum - default_range
+    elif minimum is None and maximum is None:
+        # Use default range
+        minimum = -default_range
+        maximum = default_range
+
+    minimum, maximum = int(minimum), int(maximum)
 
     not_multiple_of = schema.get("notMultipleOf", [])
     if not isinstance(not_multiple_of, list):
@@ -58,33 +96,17 @@ def random_integer(schema):
 def random_number(schema):
     """Generate random number."""
 
-    minimum = schema.get("minimum", None)
-    exclusive_minimum = schema.get("exclusiveMinimum", None)
-    minimum = max(
-        minimum or Decimal("-Infinity"),
-        exclusive_minimum or Decimal("-Infinity")
-    )
-    if minimum == Decimal("-Infinity"):
-        minimum = None
-
-    maximum = schema.get("maximum", None)
-    exclusive_maximum = schema.get("exclusiveMaximum", None)
-    maximum = min(
-        maximum or Decimal("Infinity"),
-        exclusive_maximum or Decimal("Infinity")
-    )
-    if maximum == Decimal("Infinity"):
-        maximum = None
+    minimum, maximum = get_minimum_maximum(schema)
 
     multiple_of = schema.get("multipleOf", None)
 
     # Sample continuously if not given multiple_of
     if not multiple_of:
-        if minimum and not maximum:
+        if minimum is not None and maximum is None:
             maximum = minimum + 100
-        elif maximum and not minimum:
+        elif maximum is not None and minimum is None:
             minimum = maximum - 100
-        elif not minimum and not maximum:
+        elif minimum is None and maximum is None:
             # Use defualt range
             minimum = -100
             maximum = 100
@@ -95,18 +117,17 @@ def random_number(schema):
             random.uniform(float(minimum), float(maximum))
         )
 
+    default_range = 100 * multiple_of
+
     # Use multiple_of to sample
-    if minimum and not maximum:
-        given_range = multiple_of / minimum
-        maximum = multiple_of * given_range
-    elif maximum and not minimum:
-        given_range = maximum / multiple_of
-        minimum = multiple_of / given_range
-    elif not maximum and not minimum:
+    if minimum is not None and maximum is None:
+        maximum = minimum + default_range
+    elif maximum is not None and minimum is None:
+        minimum = maximum - default_range
+    elif minimum is None and maximum is None:
         # Use defualt range
-        given_range = 100
-        maximum = multiple_of * given_range
-        minimum = multiple_of / given_range
+        maximum = default_range
+        minimum = -default_range
 
     not_multiple_of = schema.get("notMultipleOf", [])
     if not isinstance(not_multiple_of, list):
