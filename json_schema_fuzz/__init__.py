@@ -18,14 +18,14 @@ class RejectionSamplingFailed(Exception):
     """
 
 
-def get_minimum_maximum(schema):
+def get_minimum_maximum(schema, schema_type):
     """
     Pull minimum and maximum from a schema
 
     Returns None if the value is not provided
     """
 
-    if schema["type"] == "integer":
+    if schema_type == "integer":
         exclusive_added_value = 1
     else:
         exclusive_added_value = 0
@@ -34,8 +34,8 @@ def get_minimum_maximum(schema):
     exclusive_minimum = schema.get("exclusiveMinimum", None)
     minimum = max(
         minimum if minimum is not None else Decimal("-Infinity"),
-        exclusive_minimum + exclusive_added_value if exclusive_minimum is not None else Decimal(
-            "-Infinity")
+        exclusive_minimum + exclusive_added_value if
+        exclusive_minimum is not None else Decimal("-Infinity")
     )
     if minimum == Decimal("-Infinity"):
         minimum = None
@@ -44,8 +44,8 @@ def get_minimum_maximum(schema):
     exclusive_maximum = schema.get("exclusiveMaximum", None)
     maximum = min(
         maximum if maximum is not None else Decimal("Infinity"),
-        exclusive_maximum - exclusive_added_value if exclusive_maximum is not None else Decimal(
-            "Infinity")
+        exclusive_maximum - exclusive_added_value if
+        exclusive_maximum is not None else Decimal("Infinity")
     )
     if maximum == Decimal("Infinity"):
         maximum = None
@@ -58,7 +58,7 @@ def random_integer(schema):
 
     multiple_of = schema.get("multipleOf", Decimal(1))
 
-    minimum, maximum = get_minimum_maximum(schema)
+    minimum, maximum = get_minimum_maximum(schema, "integer")
 
     default_range = 100 * multiple_of
 
@@ -96,7 +96,7 @@ def random_integer(schema):
 def random_number(schema):
     """Generate random number."""
 
-    minimum, maximum = get_minimum_maximum(schema)
+    minimum, maximum = get_minimum_maximum(schema, "number")
 
     multiple_of = schema.get("multipleOf", None)
 
