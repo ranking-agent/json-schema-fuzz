@@ -87,9 +87,8 @@ def random_integer(schema):
 
         # Verify
         is_multiple_of = [value % num == 0 for num in not_multiple_of]
-        if any(is_multiple_of):
-            continue
-        return int(value)
+        if not any(is_multiple_of):
+            return int(value)
     raise RejectionSamplingFailed()
 
 
@@ -142,9 +141,8 @@ def random_number(schema):
 
         # Verify
         is_multiple_of = [value % num == 0 for num in not_multiple_of]
-        if any(is_multiple_of):
-            continue
-        return value
+        if not any(is_multiple_of):
+            return value
     raise RejectionSamplingFailed()
 
 
