@@ -16,6 +16,9 @@ from json_schema_fuzz.utils import custom_json_loads
 
 def not_multiple_of_validator(validator, value, instance, schema):
     """ jsonschema validator function for custom notMultipleOf property """
+    if not validator.is_type(instance, "number"):
+        return
+
     if not isinstance(value, list):
         value = [value]
     for num in value:
