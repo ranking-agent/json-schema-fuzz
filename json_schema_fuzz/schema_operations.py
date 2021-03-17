@@ -3,7 +3,7 @@ import copy
 import itertools
 from typing import Any, Dict, List
 
-from .utils import ALL_TYPES, lcm
+from .utils import ALL_TYPES, lcm, listify
 
 
 def get_from_all(
@@ -107,6 +107,29 @@ def merge(
 
     # Process remaining properties that have more
     # complex merging requirements
+
+    # When merging types use the intersection of the provided
+    # lists. The only exception to this is with number because
+    # number is an integer.
+    type_values = get_from_all(schemas, "type")
+    if type_values:
+        # Convert to sets
+        type_values = [set(listify(type_value)) for type_value in type_values]
+
+        has_integer = any(
+                "integer" in type_value for type_value in type_values
+                )
+        if has_integer:
+            # Convert all numbers to integers
+            for type_value in type_values:
+                if "number" in type_value:
+                    type_value.remove("number")
+                    type_value.add("integer")
+
+        # Merge using intersection
+        merged_schema["type"] = list(
+                set.intersection(*type_values)
+                )
 
     any_of_values = get_from_all(schemas, "anyOf")
     if any_of_values:

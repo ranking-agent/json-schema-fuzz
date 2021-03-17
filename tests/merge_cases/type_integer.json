@@ -1,0 +1,9 @@
+{
+  "schemas" : [
+    { "type" : "number" },
+    { "type" : "integer" }
+  ],
+  "merged" : {
+    "type" : ["integer"]
+  }
+}
