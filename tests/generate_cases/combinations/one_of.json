@@ -1,0 +1,11 @@
+{
+  "type": "number",
+  "oneOf": [
+    {
+      "multipleOf": 4
+    },
+    {
+      "multipleOf": 10
+    }
+  ]
+}
