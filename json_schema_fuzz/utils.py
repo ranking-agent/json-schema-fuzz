@@ -26,20 +26,30 @@ def listify(value):
         return [value]
 
 
+def gcd(num_a, num_b):
+    """
+    Calculate the Greatest Common Divisor of a and b.
+
+    Same implementation as math.gcd except this one
+    works with decimals.
+    """
+    while num_b:
+        num_a, num_b = num_b, num_a % num_b
+    return num_a
+
+
 def lcm(
         numbers: List[int]
 ) -> int:
     """
     Find least common multiple of a list of numbers
-
-    TODO replace with math.lcm after updating to Python 3.9
     """
-    product = 1
-    gcd = 1
+    current_product = 1
+    current_gcd = 1
     for num in numbers:
-        gcd = math.gcd(gcd, num)
-        product *= num
-    return product // gcd
+        current_gcd = gcd(current_gcd, num)
+        current_product *= num
+    return current_product // current_gcd
 
 
 def random_multiple_in_range(start, stop, multiple):
