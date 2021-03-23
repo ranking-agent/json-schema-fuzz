@@ -1,0 +1,25 @@
+{
+  "type": "number",
+  "allOf": [
+    {
+      "anyOf": [
+        {
+          "minimum": 4
+        },
+        {
+          "minimum": 6
+        }
+      ]
+    },
+    {
+      "anyOf": [
+        {
+          "minimum": 8
+        },
+        {
+          "maximum": 10
+        }
+      ]
+    }
+  ]
+}
