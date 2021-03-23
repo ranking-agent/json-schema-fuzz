@@ -207,16 +207,35 @@ def generate_json_from_string(schema_str):
 
 
 # pylint: disable=too-many-return-statements
+# pylint: disable=too-many-branches
 def generate_json(schema):
     """Generate random JSON conforming to schema."""
 
-    # Merge allOf subschemas into the base schema
-    all_of = schema.get("allOf", [])
-    for subschema in all_of:
-        schema = merge(schema, subschema)
+    # Merge allOf into the schema until we don't have any left
+    # The merge might add more allOfs so we use a while loop
+    while True:
+        # If we have oneOf we can
+        # use the merging utility to get rid of it
+        one_of = schema.pop("oneOf", None)
+        if one_of is not None:
+            schema = merge(schema, {"oneOf": one_of})
 
+        all_of = schema.pop("allOf", [])
+        if len(all_of) == 0:
+            break
+        for subschema in all_of:
+            schema = merge(schema, subschema)
+
+    # If we have anyOf select one for the current instance
+    any_of = schema.get("anyOf", [])
+    if len(any_of) > 0:
+        instance_anyof = random.choice(any_of)
+        schema = merge(schema, instance_anyof)
+
+    print(f"Simplified schema representation: {schema}")
+
+    # Select a type
     possible_types = listify(schema.get("type", ALL_TYPES))
-
     instance_type = random.choice(possible_types)
 
     if instance_type == "number":
