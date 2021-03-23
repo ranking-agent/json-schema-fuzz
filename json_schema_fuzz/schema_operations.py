@@ -117,8 +117,8 @@ def merge(
         type_values = [set(listify(type_value)) for type_value in type_values]
 
         has_integer = any(
-                "integer" in type_value for type_value in type_values
-                )
+            "integer" in type_value for type_value in type_values
+        )
         if has_integer:
             # Convert all numbers to integers
             for type_value in type_values:
@@ -128,8 +128,8 @@ def merge(
 
         # Merge using intersection
         merged_schema["type"] = list(
-                set.intersection(*type_values)
-                )
+            set.intersection(*type_values)
+        )
 
     any_of_values = get_from_all(schemas, "anyOf")
     if any_of_values:
