@@ -1,0 +1,15 @@
+{
+  "schemas": [
+    {
+      "anyAdditionalProperty": false
+    },
+    {
+      "anyAdditionalProperty": {
+        "minimum": 4
+      }
+    }
+  ],
+  "merged": {
+    "anyAdditionalProperty": false
+  }
+}

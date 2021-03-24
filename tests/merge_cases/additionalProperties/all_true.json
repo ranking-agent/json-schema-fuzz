@@ -1,0 +1,13 @@
+{
+  "schemas": [
+    {
+      "additionalProperties": true
+    },
+    {
+      "additionalProperties": {}
+    }
+  ],
+  "merged": {
+    "additionalProperties": {}
+  }
+}
