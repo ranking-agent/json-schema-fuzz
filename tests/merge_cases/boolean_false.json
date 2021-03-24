@@ -1,0 +1,9 @@
+{
+  "schemas": [
+    false,
+    {
+      "minimum": 4
+    }
+  ],
+  "merged": false
+}

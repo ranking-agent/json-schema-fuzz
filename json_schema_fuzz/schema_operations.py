@@ -70,6 +70,17 @@ def merge(
     This is equivalent to an allOf with the provided schemas.
     """
 
+    # If there is a False, the combined schema must be false
+    if any(schema is False for schema in schemas):
+        return False
+
+    # Replace True with the empty schema
+    schemas = [
+        {} if schema is True
+        else schema
+        for schema in schemas
+    ]
+
     merged_schema = {}
 
     # Dictionary of properties and how
@@ -232,6 +243,10 @@ def invert(
     for anything that validates false on the original
     schema.
     """
+
+    if isinstance(schema, bool):
+        return not schema
+
     inverted_schemas = []
 
     type = schema.get("type", None)
@@ -313,9 +328,15 @@ def invert(
         })
 
     additional_properties = schema.get("additionalProperties", None)
-    if additional_properties:
+    if additional_properties is not None:
         inverted_schemas.append({
             "anyAdditionalProperties": invert(additional_properties),
+        })
+
+    any_additional_property = schema.get("anyAdditionalProperty", None)
+    if any_additional_property is not None:
+        inverted_schemas.append({
+            "additionalProperties": invert(any_additional_property),
         })
 
     # Arrays
@@ -347,9 +368,13 @@ def invert(
 
     # Combine all schemas together and return
 
+    # No schemas means this will never be valid
+    if len(inverted_schemas) == 0:
+        return False
+
     # To make the output simpler use a condensed output if we
     # only generated one item
     if len(inverted_schemas) == 1:
         return inverted_schemas[0]
-    else:
-        return {"anyOf": inverted_schemas}
+
+    return {"anyOf": inverted_schemas}
