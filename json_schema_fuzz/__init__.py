@@ -206,25 +206,38 @@ def generate_json_from_string(schema_str):
     return generate_json(schema)
 
 
+def simplify_schema(schema):
+    """
+    Process schema to remove values that are hard
+    to generate such as allOf and oneOf
+    """
+
+    # Merge allOf and oneOf into the schema until we don't have any left
+    # The merge might add more allOfs so we use a while loop
+    while True:
+        one_of = schema.pop("oneOf", [])
+        all_of = schema.pop("allOf", [])
+        if len(all_of) == 0 and len(one_of) == 0:
+            break
+
+        # If we have oneOf we can
+        # use the merging utility to get rid of it
+        if len(one_of) > 0:
+            schema = merge(schema, {"oneOf": one_of})
+
+        # Merge allOf into the base
+        if len(all_of) > 0:
+            schema = merge(schema, *all_of)
+
+    return schema
+
+
 # pylint: disable=too-many-return-statements
 # pylint: disable=too-many-branches
 def generate_json(schema):
     """Generate random JSON conforming to schema."""
 
-    # Merge allOf into the schema until we don't have any left
-    # The merge might add more allOfs so we use a while loop
-    while True:
-        # If we have oneOf we can
-        # use the merging utility to get rid of it
-        one_of = schema.pop("oneOf", None)
-        if one_of is not None:
-            schema = merge(schema, {"oneOf": one_of})
-
-        all_of = schema.pop("allOf", [])
-        if len(all_of) == 0:
-            break
-        for subschema in all_of:
-            schema = merge(schema, subschema)
+    simplify_schema(schema)
 
     # If we have anyOf select one for the current instance
     any_of = schema.get("anyOf", [])
