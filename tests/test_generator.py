@@ -7,7 +7,7 @@ import jsonpickle
 import jsonschema
 import pytest
 
-from json_schema_fuzz import generate_json
+from json_schema_fuzz import generate_json, simplify_schema
 from json_schema_fuzz.utils import custom_json_loads
 
 # Create a custom validator
@@ -105,3 +105,34 @@ def test_no_pattern_string():
     }
     output = generate_json(schema)
     assert isinstance(output, str)
+
+
+def test_simplify():
+    """
+    Test that our simplify method processes a nested JSON
+    object to remove oneOf and anyOf
+    """
+
+    schema = {
+        "oneOf": [
+            {"minimum": 4},
+            {"allOf": [
+                {"maximum": 3},
+                {"oneOf": [
+                    {"multipleOf": 7},
+                    {"multipleOf": 5},
+                    {"oneOf": [
+                        {"exclusiveMinimum": 10},
+                        {"exclusiveMaximum": 4},
+                    ]}
+                ]
+                }
+            ]}
+        ]
+    }
+
+    schema = simplify_schema(schema)
+
+    assert "oneOf" not in schema
+    assert "allOf" not in schema
+    assert "anyOf" in schema
