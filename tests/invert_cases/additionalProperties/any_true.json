@@ -3,6 +3,6 @@
     "additionalProperties": true
   },
   "inverted": {
-    "additionalProperties": false
+    "anyAdditionalProperty": false
   }
 }
