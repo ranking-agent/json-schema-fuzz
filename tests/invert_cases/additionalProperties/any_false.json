@@ -1,6 +1,6 @@
 {
   "schema": {
-    "anyAdditionalProperty": false
+    "someAdditionalProperty": false
   },
   "inverted": {
     "additionalProperties": true
