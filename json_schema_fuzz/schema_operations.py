@@ -52,6 +52,21 @@ def merge_listify(values):
     return output
 
 
+def combine_anyof_lists(*values):
+    """
+    Merge lists of anyOf values so that they all must
+    be true. This is done by merging all the permutations
+    of the lists.
+    """
+    values = list(filter(len, values))
+    if len(values) == 1:
+        return values[0]
+
+    output = []
+    for anyof_permutation in itertools.product(*values):
+        output.append(merge(*anyof_permutation))
+    return output
+
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
@@ -103,7 +118,6 @@ def merge(
 
         # Object
         "required": merge_listify,
-        "anyAdditionalProperty": merge_listify,
         "additionalProperties": lambda values: merge(*values),
 
         # Array
@@ -144,9 +158,7 @@ def merge(
 
     any_of_values = get_from_all(schemas, "anyOf")
     if any_of_values:
-        merged_schema["anyOf"] = []
-        for anyof_permutation in itertools.product(*any_of_values):
-            merged_schema["anyOf"].append(merge(*anyof_permutation))
+        merged_schema["anyOf"] = combine_anyof_lists(*any_of_values)
 
     one_of_values = get_from_all(schemas, "oneOf")
     if one_of_values:
@@ -181,16 +193,9 @@ def merge(
             ]
             new_anyof_values.append(merge(*denested_schemas))
 
-        # If there are already anyof values,
-        # call merge() again to merge them with the
-        # new anyOf values
-        if 'anyOf' in merged_schema:
-            merged_schema["anyOf"] = merge(
-                {"anyOf": merged_schema["anyOf"]},
-                {"anyOf": new_anyof_values}
-            )
-        else:
-            merged_schema["anyOf"] = new_anyof_values
+        existing_anyof = merged_schema.get("anyOf", [])
+        merged_schema["anyOf"] = combine_anyof_lists(
+            existing_anyof, new_anyof_values)
 
     properties_values = get_from_all(schemas, "properties")
     if properties_values:
@@ -330,7 +335,7 @@ def invert(
     additional_properties = schema.get("additionalProperties", None)
     if additional_properties is not None:
         inverted_schemas.append({
-            "anyAdditionalProperties": invert(additional_properties),
+            "anyAdditionalProperty": invert(additional_properties),
         })
 
     any_additional_property = schema.get("anyAdditionalProperty", None)
