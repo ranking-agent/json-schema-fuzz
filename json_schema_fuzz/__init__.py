@@ -245,8 +245,6 @@ def generate_json(schema):
         instance_anyof = random.choice(any_of)
         schema = merge(schema, instance_anyof)
 
-    print(f"Simplified schema representation: {schema}")
-
     # Select a type
     possible_types = listify(schema.get("type", ALL_TYPES))
     instance_type = random.choice(possible_types)
