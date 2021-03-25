@@ -10,7 +10,7 @@ from json_schema_fuzz.schema_operations import invert, merge
 THIS_DIR = Path(__file__).parent
 MERGE_CASE_DIR = THIS_DIR / "merge_cases"
 merge_case_files = glob.glob(
-    str(MERGE_CASE_DIR / "*.json"))
+    str(MERGE_CASE_DIR / "**/*.json"), recursive=True)
 merge_cases = []
 for filename in merge_case_files:
     with open(filename, "r") as stream:
@@ -38,7 +38,7 @@ def test_merge_doesnt_modify():
 
 INVERT_CASE_DIR = THIS_DIR / "invert_cases"
 invert_case_files = glob.glob(
-    str(INVERT_CASE_DIR / "*.json"))
+    str(INVERT_CASE_DIR / "**/*.json"))
 invert_cases = []
 for filename in invert_case_files:
     with open(filename, "r") as stream:
