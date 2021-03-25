@@ -2,5 +2,7 @@
   "schema": {
     "additionalProperties": true
   },
-  "inverted": false
+  "inverted": {
+    "anyAdditionalProperty": false
+  }
 }
