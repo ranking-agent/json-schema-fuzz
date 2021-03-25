@@ -119,6 +119,7 @@ def merge(
         # Object
         "required": merge_listify,
         "additionalProperties": lambda values: merge(*values),
+        "someAdditionalProperty": merge_listify,
 
         # Array
         "contains": merge_listify,
@@ -335,13 +336,13 @@ def invert(
     additional_properties = schema.get("additionalProperties", None)
     if additional_properties is not None:
         inverted_schemas.append({
-            "anyAdditionalProperty": invert(additional_properties),
+            "someAdditionalProperty": invert(additional_properties),
         })
 
-    any_additional_property = schema.get("anyAdditionalProperty", None)
-    if any_additional_property is not None:
+    some_additional_property = schema.get("someAdditionalProperty", None)
+    if some_additional_property is not None:
         inverted_schemas.append({
-            "additionalProperties": invert(any_additional_property),
+            "additionalProperties": invert(some_additional_property),
         })
 
     # Arrays
