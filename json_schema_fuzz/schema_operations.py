@@ -257,7 +257,8 @@ def invert(
 
     type = schema.get("type", None)
     if type:
-        inverted_schemas.append({"type": ALL_TYPES - type})
+        type = listify(type)
+        inverted_schemas.append({"type": list(set(ALL_TYPES) - set(type))})
 
     # Combinations
 
