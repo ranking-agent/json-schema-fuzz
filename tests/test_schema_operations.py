@@ -38,7 +38,7 @@ def test_merge_doesnt_modify():
 
 INVERT_CASE_DIR = THIS_DIR / "invert_cases"
 invert_case_files = glob.glob(
-    str(INVERT_CASE_DIR / "**/*.json"))
+    str(INVERT_CASE_DIR / "**/*.json"), recursive=True)
 invert_cases = []
 for filename in invert_case_files:
     with open(filename, "r") as stream:
