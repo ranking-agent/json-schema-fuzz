@@ -256,9 +256,11 @@ def invert(
     inverted_schemas = []
 
     type = schema.get("type", None)
-    if type:
+    if type is not None:
         type = listify(type)
-        inverted_schemas.append({"type": list(set(ALL_TYPES) - set(type))})
+        inverted_schemas.append({
+            "type": sorted(list(set(ALL_TYPES) - set(type)))
+        })
 
     # Combinations
 
