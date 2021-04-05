@@ -1,0 +1,15 @@
+{
+    "schema" : {
+        "type": "string"
+    },
+    "inverted" : {
+        "type": [
+            "array",
+            "boolean",
+            "integer",
+            "null",
+            "number",
+            "object"
+        ]
+    }
+}
