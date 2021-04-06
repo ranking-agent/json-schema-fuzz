@@ -8,10 +8,10 @@ from . import custom_json_loads, generate_json
 
 @click.command()
 @click.argument("schema-file", type=click.File("r"))
-@click.option("--count",
+@click.option("-c", "--count",
               default=1,
               help="Number of samples to generate")
-@click.option("--output-filename-prefix",
+@click.option("-o", "--output-filename-prefix",
               help="If given, write samples to files with the format \
                     {prefix}{num}.json")
 def generate_json_command(schema_file, count, output_filename_prefix):
@@ -26,6 +26,4 @@ def generate_json_command(schema_file, count, output_filename_prefix):
             print(output_json)
 
 
-if __name__ == "__main__":
-    # pylint: disable=no-value-for-parameter
-    generate_json_command()
+generate_json_command.main(prog_name="json_schema_fuzz")
